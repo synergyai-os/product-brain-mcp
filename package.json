@@ -1,6 +1,6 @@
 {
   "name": "product-os-mcp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Product OS MCP server — single source of truth for product knowledge in Cursor. Glossary, business rules, tensions, decisions, labels, and relations.",
   "type": "module",
   "bin": {
