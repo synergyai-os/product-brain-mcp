@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
