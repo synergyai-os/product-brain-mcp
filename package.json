@@ -1,6 +1,6 @@
 {
   "name": "synergyos-mcp",
-  "version": "0.1.0-beta.0",
+  "version": "0.1.0-beta.1",
   "description": "SynergyOS MCP server — single source of truth for product knowledge in Cursor. Glossary, business rules, tensions, decisions, labels, and relations.",
   "type": "module",
   "bin": {
