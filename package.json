@@ -1,10 +1,10 @@
 {
-  "name": "product-os-mcp",
-  "version": "1.0.2",
-  "description": "Product OS MCP server — single source of truth for product knowledge in Cursor. Glossary, business rules, tensions, decisions, labels, and relations.",
+  "name": "synergyos-mcp",
+  "version": "0.1.0-beta.0",
+  "description": "SynergyOS MCP server — single source of truth for product knowledge in Cursor. Glossary, business rules, tensions, decisions, labels, and relations.",
   "type": "module",
   "bin": {
-    "product-os-mcp": "dist/index.js"
+    "synergyos-mcp": "dist/index.js"
   },
   "files": [
     "dist",
@@ -19,9 +19,12 @@
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "publish:beta": "npm publish --tag=beta",
+    "version:prerelease": "npm version prerelease"
   },
   "keywords": [
+    "synergyos",
     "mcp",
     "model-context-protocol",
     "cursor",
@@ -35,7 +38,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/synergyai-os/product-os-mcp.git"
+    "url": "git+https://github.com/synergyai-os/product-os-mcp.git"
   },
   "homepage": "https://github.com/synergyai-os/product-os-mcp#readme",
   "dependencies": {

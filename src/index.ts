@@ -50,7 +50,7 @@ trackSessionStarted(
 
 const server = new McpServer(
   {
-    name: "product-os",
+    name: "synergyos",
     version: SERVER_VERSION,
   },
   {

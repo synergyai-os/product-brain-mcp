@@ -34,6 +34,11 @@ function getEnv(key: string): string {
   return value;
 }
 
+/** Only write audit to stderr on errors, or when MCP_DEBUG=1. Keeps default DX quiet. */
+function shouldLogAudit(status: 'ok' | 'error'): boolean {
+  return status === 'error' || process.env.MCP_DEBUG === '1';
+}
+
 function audit(fn: string, status: 'ok' | 'error', durationMs: number, errorMsg?: string): void {
   const ts = new Date().toISOString();
   const workspace = cachedWorkspaceId ?? 'unresolved';
@@ -44,6 +49,8 @@ function audit(fn: string, status: 'ok' | 'error', durationMs: number, errorMsg?
   if (auditBuffer.length > AUDIT_BUFFER_SIZE) auditBuffer.shift();
 
   trackToolCall(fn, status, durationMs, workspace, errorMsg);
+
+  if (!shouldLogAudit(status)) return;
 
   const base = `[MCP-AUDIT] ${ts} fn=${fn} workspace=${workspace} status=${status} duration=${durationMs}ms`;
   if (status === 'error' && errorMsg) {

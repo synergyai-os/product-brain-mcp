@@ -1,8 +1,8 @@
-# Product OS MCP
+# SynergyOS MCP
 
 The single source of truth for product knowledge -- glossary, business rules, tensions, decisions, labels, and relations -- accessible as an MCP server in [Cursor](https://cursor.com).
 
-Product OS MCP connects your AI coding assistant to your team's product knowledge base. Ask questions, capture decisions, and build a living knowledge graph without leaving your editor.
+SynergyOS MCP connects your AI coding assistant to your team's product knowledge base. Ask questions, capture decisions, and build a living knowledge graph without leaving your editor.
 
 ## Quick Start
 
@@ -13,9 +13,9 @@ Add this to your Cursor MCP config (`.cursor/mcp.json`):
 ```json
 {
   "mcpServers": {
-    "product-os": {
+    "synergyos": {
       "command": "npx",
-      "args": ["-y", "product-os-mcp"],
+      "args": ["-y", "synergyos-mcp"],
       "env": {
         "CONVEX_SITE_URL": "https://your-deployment.convex.site",
         "MCP_API_KEY": "your-secret-api-key",
@@ -28,7 +28,7 @@ Add this to your Cursor MCP config (`.cursor/mcp.json`):
 
 ### 2. Get Your Credentials
 
-You need a SynergyOS account to use Product OS MCP.
+You need a SynergyOS account to use SynergyOS MCP.
 
 | Variable | Where to find it |
 |----------|-----------------|
@@ -40,7 +40,7 @@ You need a SynergyOS account to use Product OS MCP.
 
 In Cursor, ask:
 
-> "Use the health tool to check Product OS connectivity"
+> "Use the health tool to check SynergyOS connectivity"
 
 You should see a response with your workspace ID, collection count, and latency.
 
@@ -143,6 +143,10 @@ The `CONVEX_SITE_URL` is unreachable. Make sure you're using the `*.convex.site`
 
 Restart Cursor after editing `.cursor/mcp.json`. Check the MCP panel (Cmd+Shift+P > "MCP: Show Panel") for startup errors.
 
+### Enable debug logging
+
+Set `MCP_DEBUG=1` in your MCP config's `env` block to see `[MCP-ANALYTICS]` and `[MCP-AUDIT]` logs in stderr. By default these are suppressed for a quieter experience.
+
 ## Development
 
 ```bash
@@ -165,7 +169,15 @@ npm start
 
 # Typecheck
 npm run typecheck
+
+# Publish prerelease (uses --tag=beta so it won't become latest)
+npm run publish:beta
+
+# Bump prerelease version (e.g. 0.1.0-beta.0 → 0.1.0-beta.1)
+npm run version:prerelease
 ```
+
+**Installing prerelease:** `npx synergyos-mcp@beta` or `npm install synergyos-mcp@beta`
 
 ## License
 

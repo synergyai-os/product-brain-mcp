@@ -16,10 +16,17 @@ let distinctId = "anonymous";
 
 const POSTHOG_HOST = "https://eu.i.posthog.com";
 
+/** Only write to stderr when MCP_DEBUG=1 for quieter default DX. */
+function log(msg: string): void {
+  if (process.env.MCP_DEBUG === "1") {
+    process.stderr.write(msg);
+  }
+}
+
 export function initAnalytics(): void {
   const apiKey = process.env.POSTHOG_MCP_KEY;
   if (!apiKey) {
-    process.stderr.write("[MCP-ANALYTICS] POSTHOG_MCP_KEY not set — tracking disabled\n");
+    log("[MCP-ANALYTICS] POSTHOG_MCP_KEY not set — tracking disabled\n");
     return;
   }
 
@@ -30,9 +37,7 @@ export function initAnalytics(): void {
   });
   distinctId = process.env.MCP_USER_ID || fallbackDistinctId();
 
-  process.stderr.write(
-    `[MCP-ANALYTICS] Initialized — host=${POSTHOG_HOST} distinctId=${distinctId}\n`,
-  );
+  log(`[MCP-ANALYTICS] Initialized — host=${POSTHOG_HOST} distinctId=${distinctId}\n`);
 }
 
 function fallbackDistinctId(): string {
