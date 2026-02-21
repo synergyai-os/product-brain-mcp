@@ -1,7 +1,7 @@
 {
-  "name": "productbrain",
+  "name": "@productbrain/mcp",
   "version": "0.0.1-beta.0",
-  "description": "ProductBrain MCP server — single source of truth for product knowledge in Cursor, Claude Desktop, and any MCP-compatible AI assistant.",
+  "description": "ProductBrain MCP server \u2014 single source of truth for product knowledge in Cursor, Claude Desktop, and any MCP-compatible AI assistant.",
   "type": "module",
   "bin": {
     "productbrain": "dist/cli/index.js",
@@ -55,5 +55,8 @@
     "tsup": "^8.0.0",
     "tsx": "^4.0.0",
     "typescript": "^5.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

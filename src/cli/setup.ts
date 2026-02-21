@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * `npx productbrain setup`
+ * `npx @productbrain/mcp setup`
  *
  * Guided onboarding: get API key from SynergyOS, paste it, and write MCP config.
  * No GitHub — keys come from SynergyOS → Settings → API Keys.
@@ -159,7 +159,7 @@ function printConfigSnippet(apiKey: string) {
       mcpServers: {
         productbrain: {
           command: "npx",
-          args: ["-y", "productbrain"],
+          args: ["-y", "@productbrain/mcp"],
           env: { PRODUCTBRAIN_API_KEY: apiKey },
         },
       },

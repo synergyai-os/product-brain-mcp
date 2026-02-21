@@ -13,6 +13,9 @@ export default defineConfig({
   splitting: true,
   sourcemap: true,
   dts: false,
+  define: {
+    __SYNERGYOS_POSTHOG_KEY__: JSON.stringify(process.env.SYNERGYOS_POSTHOG_KEY ?? ""),
+  },
   onSuccess: async () => {
     for (const file of ["dist/index.js", "dist/cli/index.js"]) {
       const path = join(process.cwd(), file);

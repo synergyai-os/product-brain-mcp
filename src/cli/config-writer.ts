@@ -25,7 +25,7 @@ const SERVER_ENTRY_KEY = "productbrain";
 function buildServerEntry(apiKey: string) {
   return {
     command: "npx",
-    args: ["-y", "productbrain"],
+    args: ["-y", "@productbrain/mcp"],
     env: { PRODUCTBRAIN_API_KEY: apiKey },
   };
 }

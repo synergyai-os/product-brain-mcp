@@ -9,7 +9,7 @@ ProductBrain connects your AI assistant to your team's knowledge base. Ask quest
 ### Option A: Guided setup (recommended)
 
 ```bash
-npx productbrain setup
+npx @productbrain/mcp setup
 ```
 
 This opens SynergyOS → Settings → API Keys, prompts you to paste your key, and writes the config for Cursor or Claude Desktop.
@@ -29,7 +29,7 @@ Go to **SynergyOS → Settings → API Keys** and click **Generate Key**. Copy t
   "mcpServers": {
     "productbrain": {
       "command": "npx",
-      "args": ["-y", "productbrain"],
+      "args": ["-y", "@productbrain/mcp"],
       "env": {
         "PRODUCTBRAIN_API_KEY": "pb_sk_your_key_here"
       }
@@ -45,7 +45,7 @@ Go to **SynergyOS → Settings → API Keys** and click **Generate Key**. Copy t
   "mcpServers": {
     "productbrain": {
       "command": "npx",
-      "args": ["-y", "productbrain"],
+      "args": ["-y", "@productbrain/mcp"],
       "env": {
         "PRODUCTBRAIN_API_KEY": "pb_sk_your_key_here"
       }
@@ -71,7 +71,7 @@ If you're running your own Convex deployment, use the three-variable config:
   "mcpServers": {
     "productbrain": {
       "command": "npx",
-      "args": ["-y", "productbrain"],
+      "args": ["-y", "@productbrain/mcp"],
       "env": {
         "CONVEX_SITE_URL": "https://your-deployment.convex.site",
         "MCP_API_KEY": "your-shared-api-key",
@@ -178,7 +178,6 @@ Omit `PRODUCTBRAIN_URL` to default to production.
 - **Your data stays yours.** The MCP server connects only to your authenticated Convex deployment. No data is shared with third parties.
 - **API key handling.** Cloud keys (`pb_sk_...`) are SHA-256 hashed before storage. Only the prefix is persisted for display. Keys are sent as Bearer tokens over HTTPS.
 - **Workspace scoping.** Each API key is bound to a single workspace. No cross-workspace access is possible.
-- **Analytics are opt-in.** Set `POSTHOG_MCP_KEY` to enable usage analytics. Omit it entirely to disable all tracking.
 
 ## Troubleshooting
 
@@ -212,6 +211,7 @@ Set `MCP_DEBUG=1` in your config's `env` block to see audit logs in stderr.
 # Clone and install
 git clone https://github.com/synergyai-os/productbrain.git
 cd productbrain
+# Or install: npm install @productbrain/mcp
 npm install
 
 # Copy env template and fill in your values
@@ -231,6 +231,7 @@ npm run typecheck
 
 # Publish beta
 npm run publish:beta
+# (Maintainers: set SYNERGYOS_POSTHOG_KEY=phc_... for usage tracking)
 ```
 
 ## License

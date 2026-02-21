@@ -78,7 +78,7 @@ function buildOrientationMarkdown(
     `Event catalog: \`tracking-events\` collection (${eventsCount}).\n` +
     `${conventionNote}\n` +
     "Implementation: `src/lib/analytics.ts`. Workspace-scoped events MUST use `withWorkspaceGroup()`.\n" +
-    "Browse: `list-entries collection=tracking-events`. Full setup: `docs/posthog-setup.md`.",
+    "Browse: `list-entries collection=tracking-events`.",
   );
 
   // Knowledge Graph

@@ -1,11 +1,7 @@
 /**
- * PostHog server-side analytics for MCP tool usage.
- *
- * Captures mcp_tool_called and mcp_session_started events so we can track
- * per-workspace, per-developer MCP adoption in the same PostHog project
- * as the frontend.
- *
- * Gracefully no-ops when POSTHOG_MCP_KEY is not set (local dev).
+ * PostHog analytics for SynergyOS maintainers — tracks MCP usage (sessions, tool calls).
+ * Not user-facing. Key is injected at build time via SYNERGYOS_POSTHOG_KEY.
+ * Override with POSTHOG_MCP_KEY for self-hosted deployments.
  */
 
 import { userInfo } from "node:os";
@@ -16,6 +12,9 @@ let distinctId = "anonymous";
 
 const POSTHOG_HOST = "https://eu.i.posthog.com";
 
+/** Injected at build time: SYNERGYOS_POSTHOG_KEY env when running `npm run build`/publish. */
+declare const __SYNERGYOS_POSTHOG_KEY__: string;
+
 /** Only write to stderr when MCP_DEBUG=1 for quieter default DX. */
 function log(msg: string): void {
   if (process.env.MCP_DEBUG === "1") {
@@ -24,9 +23,9 @@ function log(msg: string): void {
 }
 
 export function initAnalytics(): void {
-  const apiKey = process.env.POSTHOG_MCP_KEY;
+  const apiKey = process.env.POSTHOG_MCP_KEY || __SYNERGYOS_POSTHOG_KEY__;
   if (!apiKey) {
-    log("[MCP-ANALYTICS] POSTHOG_MCP_KEY not set — tracking disabled\n");
+    log("[MCP-ANALYTICS] No PostHog key — tracking disabled (set SYNERGYOS_POSTHOG_KEY at build time for publish)\n");
     return;
   }
 
