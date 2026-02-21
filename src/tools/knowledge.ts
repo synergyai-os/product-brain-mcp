@@ -236,7 +236,7 @@ export function registerKnowledgeTools(server: McpServer) {
       title: "Update Entry",
       description:
         "Update an existing entry by its human-readable ID. Only provide the fields you want to change — data fields are merged with existing values. " +
-        "Use get-entry first to see current values. SOS-020: Cannot update tension status via MCP — process decides (use Product OS UI after approval).",
+        "Use get-entry first to see current values. SOS-020: Cannot update tension status via MCP — process decides (use SynergyOS UI after approval).",
       inputSchema: {
         entryId: z.string().describe("Entry ID to update, e.g. 'T-SUPPLIER', 'BR-001'"),
         name: z.string().optional().describe("New display name"),
@@ -271,7 +271,7 @@ export function registerKnowledgeTools(server: McpServer) {
                 `- Create tensions: \`create-entry collection=tensions name="..." status=open\`\n` +
                 `- List tensions: \`list-entries collection=tensions\`\n` +
                 `- Update non-status fields (raised, date, priority, description) via \`update-entry\`\n` +
-                `- After process approval, a human uses the Product OS UI to change status\n\n` +
+                `- After process approval, a human uses the SynergyOS UI to change status\n\n` +
                 `Process criteria (TBD): e.g. 3+ users approved, or 7 days without valid concerns.`,
             }],
           };
@@ -736,12 +736,108 @@ export function registerKnowledgeTools(server: McpServer) {
   );
 
   server.registerTool(
+    "load-context-for-task",
+    {
+      title: "Load Context for Task",
+      description:
+        "Auto-load relevant domain knowledge for a task in a single call. " +
+        "Pass a natural-language task description; the tool searches the KB, traverses the knowledge graph, " +
+        "and returns a ranked set of entries (business rules, glossary terms, decisions, features, etc.) " +
+        "grouped by collection with a confidence score.\n\n" +
+        "Use this at the start of a conversation to ground the agent in domain context before writing code or making recommendations.\n\n" +
+        "Confidence levels:\n" +
+        "- high: 3+ direct KB matches — strong domain coverage\n" +
+        "- medium: 1-2 direct matches — partial coverage, may want to drill deeper\n" +
+        "- low: no direct matches but related entries found via graph traversal\n" +
+        "- none: no relevant entries found — KB may not cover this area yet",
+      inputSchema: {
+        taskDescription: z.string().describe("Natural-language description of the task or user message"),
+        maxResults: z.number().min(1).max(25).default(10).optional()
+          .describe("Max entries to return (default 10)"),
+        maxHops: z.number().min(1).max(3).default(2).optional()
+          .describe("Graph traversal depth from each search hit (default 2)"),
+      },
+      annotations: { readOnlyHint: true, openWorldHint: true },
+    },
+    async ({ taskDescription, maxResults, maxHops }) => {
+      await server.sendLoggingMessage({
+        level: "info",
+        data: `Loading context for task: "${taskDescription.substring(0, 80)}..."`,
+        logger: "product-os",
+      });
+
+      const result = await mcpQuery<{
+        entries: Array<{
+          entryId?: string;
+          name: string;
+          collectionSlug: string;
+          collectionName: string;
+          descriptionPreview: string;
+          codePaths: string[];
+          hop: number;
+          relationType?: string;
+        }>;
+        confidence: string;
+        searchTerms: string;
+        totalFound: number;
+      }>("kb.loadContextForTask", {
+        taskDescription,
+        maxResults: maxResults ?? 10,
+        maxHops: maxHops ?? 2,
+      });
+
+      if (result.confidence === "none" || result.entries.length === 0) {
+        return {
+          content: [{
+            type: "text" as const,
+            text: `# Context Loaded\n\n**Confidence:** None\n\n` +
+              `No KB context found for this task. The knowledge base may not cover this area yet.\n\n` +
+              `_Consider capturing domain knowledge discovered during this task via \`smart-capture\`._`,
+          }],
+        };
+      }
+
+      const byCollection = new Map<string, typeof result.entries>();
+      for (const entry of result.entries) {
+        const key = entry.collectionName;
+        if (!byCollection.has(key)) byCollection.set(key, []);
+        byCollection.get(key)!.push(entry);
+      }
+
+      const lines: string[] = [
+        `# Context Loaded`,
+        `**Confidence:** ${result.confidence.charAt(0).toUpperCase() + result.confidence.slice(1)}`,
+        `**Matched:** ${result.entries.length} entries across ${byCollection.size} collection${byCollection.size === 1 ? "" : "s"}`,
+        "",
+      ];
+
+      for (const [collName, entries] of byCollection) {
+        lines.push(`### ${collName} (${entries.length})`);
+        for (const e of entries) {
+          const id = e.entryId ? `**${e.entryId}:** ` : "";
+          const hopLabel = e.hop > 0 ? ` _(hop ${e.hop}${e.relationType ? `, ${e.relationType}` : ""})_` : "";
+          const preview = e.descriptionPreview ? `\n  ${e.descriptionPreview}` : "";
+          const codePaths = e.codePaths.length > 0 ? `\n  Code: ${e.codePaths.join(", ")}` : "";
+          lines.push(`- ${id}${e.name}${hopLabel}${preview}${codePaths}`);
+        }
+        lines.push("");
+      }
+
+      lines.push(`_Use \`get-entry\` for full details on any entry._`);
+
+      return {
+        content: [{ type: "text" as const, text: lines.join("\n") }],
+      };
+    }
+  );
+
+  server.registerTool(
     "review-rules",
     {
       title: "Review Business Rules",
       description:
         "Surface all active business rules for a domain, formatted for compliance review. " +
-        "Use when reviewing code, designs, or decisions against Product OS governance. " +
+        "Use when reviewing code, designs, or decisions against ProductBrain governance. " +
         "Optionally provide context (what you're building or reviewing) to help focus the review. " +
         "This is the tool form of the review-against-rules prompt.",
       inputSchema: {

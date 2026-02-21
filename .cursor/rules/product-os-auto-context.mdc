@@ -1,0 +1,38 @@
+---
+description: Automatically load domain context from Product OS before starting work on product-related tasks
+alwaysApply: true
+---
+
+# Product OS — Auto-Context Loading
+
+Before responding to the user's first message, assess whether the task touches the product domain. If it does, load context from the knowledge base so your first response is grounded in domain knowledge.
+
+## Step 1: Assess domain relevance
+
+Scan the user's message for signals that domain context would help:
+
+- **Load context** if the message mentions: product entities, domain concepts (e.g. entries, collections, relations, tensions, business rules, glossary terms, features), business logic, workflows, or code that implements domain features.
+- **Load context** if the message involves: writing or reviewing code that touches domain models, shaping or planning product features, making architecture or design decisions, terminology or naming questions.
+- **Skip** if the task is clearly non-domain: generic CSS/styling, library syntax help, infrastructure/DevOps unrelated to the product, documentation formatting, or the user explicitly says the topic is external.
+
+When in doubt, load context. A quick `load-context-for-task` call that returns no results is cheaper than an agent that gets domain facts wrong.
+
+## Step 2: Load context
+
+Call the `load-context-for-task` tool from the `synergyos` MCP server with the user's message:
+
+```
+load-context-for-task taskDescription="<the user's message>"
+```
+
+This is a single call that searches the KB, traverses the knowledge graph, and returns ranked entries with a confidence score.
+
+## Step 3: Act on the result
+
+- **High/Medium confidence**: Proceed with the task using the loaded context. Show a brief Context Packet summary (entry IDs, collection names, confidence level). Reference KB entries by ID when making domain-informed decisions.
+- **Low confidence**: Show what was found. Ask: "I found related context but no direct matches — does this look relevant?"
+- **None**: Say "No KB context found for this area" and offer to capture domain knowledge discovered during the task.
+
+## Step 4: Enrich as you work
+
+When you discover domain knowledge during the task — new terms, business rules, code-to-concept mappings — capture it via `smart-capture` or `update-entry`. This feeds the flywheel: every conversation makes the KB richer for next time.

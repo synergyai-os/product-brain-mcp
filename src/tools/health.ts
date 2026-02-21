@@ -99,7 +99,7 @@ export function registerHealthTools(server: McpServer) {
     {
       title: "Health Check",
       description:
-        "Verify that Product OS is running and can reach its backend. " +
+        "Verify that ProductBrain is running and can reach its backend. " +
         "Returns workspace status, collection count, entry count, and latency. " +
         "Use this to confirm connectivity before doing real work.",
       annotations: { readOnlyHint: true },

@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Is a Product Brain? The MCP-Native Knowledge Server for Product Teams — ProductBrain</title>
+  <meta name="description" content="A Product Brain is a protocol-native knowledge server that gives AI structured, real-time access to your product's glossary, business rules, decisions, and relations. Built on MCP. Open source. Free forever.">
+  <meta property="og:title" content="What Is a Product Brain? — ProductBrain">
+  <meta property="og:description" content="'Product Brain' has been a metaphor. We're turning it into infrastructure. The first MCP-native knowledge server purpose-built for product teams.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ProductBrain by SynergyOS.ai">
+  <meta name="keywords" content="product brain, product brain MCP, MCP product knowledge, model context protocol, product knowledge server, AI product management, MCP server, product knowledge graph">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    :root {
+      --accent: #fb923c;
+      --accent-bright: #fdba74;
+      --accent-dim: #ea580c;
+    }
+
+    /* ── Definition block ──────────────────────────────────── */
+
+    .definition-block {
+      max-width: 760px;
+      margin: 48px auto 0;
+      padding: 40px 44px;
+      border-radius: var(--radius);
+      background: rgba(251,146,60,.04);
+      border: 1px solid rgba(251,146,60,.18);
+      text-align: left;
+      position: relative;
+    }
+
+    .definition-block::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 40px;
+      right: 40px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .definition-term {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .definition-phonetic {
+      font-size: .85rem;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 16px;
+    }
+
+    .definition-body {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--text-muted);
+    }
+
+    .definition-body strong {
+      color: var(--text);
+    }
+
+    /* ── Landscape cards ───────────────────────────────────── */
+
+    .landscape-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .landscape-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      text-align: left;
+      transition: border-color .2s;
+    }
+
+    .landscape-card:hover { border-color: var(--border-hover); }
+
+    .landscape-card .lc-label {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .landscape-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .landscape-card p {
+      color: var(--text-muted);
+      font-size: .88rem;
+      line-height: 1.65;
+    }
+
+    /* ── Evolution cards (before MCP / generic / PB) ──────── */
+
+    .evo-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .evo-card {
+      border-radius: var(--radius);
+      padding: 28px;
+      text-align: left;
+    }
+
+    .evo-card--past {
+      background: rgba(248,113,113,.04);
+      border: 1px solid rgba(248,113,113,.15);
+    }
+
+    .evo-card--present {
+      background: rgba(161,161,170,.04);
+      border: 1px solid rgba(161,161,170,.15);
+    }
+
+    .evo-card--future {
+      background: rgba(251,146,60,.05);
+      border: 1px solid rgba(251,146,60,.2);
+    }
+
+    .evo-card .evo-label {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 12px;
+    }
+
+    .evo-card--past .evo-label { color: var(--red); }
+    .evo-card--present .evo-label { color: var(--text-dim); }
+    .evo-card--future .evo-label { color: var(--accent); }
+
+    .evo-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .evo-card p {
+      color: var(--text-muted);
+      font-size: .88rem;
+      line-height: 1.6;
+    }
+
+    /* ── Architecture diagram ──────────────────────────────── */
+
+    .arch-diagram {
+      margin-top: 56px;
+    }
+
+    .arch-hub {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      padding: 20px 0;
+    }
+
+    .arch-hub-label {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+      padding: 10px 24px;
+      border-radius: var(--radius-sm);
+      background: rgba(251,146,60,.08);
+      border: 1px solid rgba(251,146,60,.2);
+    }
+
+    .arch-connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 24px;
+    }
+
+    .arch-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-hover), transparent);
+    }
+
+    .arch-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .arch-cols {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .arch-col {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      text-align: left;
+      transition: border-color .2s;
+    }
+
+    .arch-col:hover { border-color: var(--border-hover); }
+
+    .arch-col .arch-col-icon {
+      font-size: 1.5rem;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .arch-col .arch-col-type {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .arch-col h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .arch-col p {
+      color: var(--text-muted);
+      font-size: .88rem;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .arch-col p:last-child { margin-bottom: 0; }
+
+    .arch-col code {
+      font-family: var(--font-mono);
+      font-size: .78rem;
+      background: rgba(255,255,255,.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent-bright);
+    }
+
+    .arch-col .mono-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .arch-col .mono-list li {
+      font-family: var(--font-mono);
+      font-size: .75rem;
+      background: rgba(255,255,255,.05);
+      padding: 3px 8px;
+      border-radius: 4px;
+      color: var(--accent-bright);
+    }
+
+    /* ── Scenario cards ────────────────────────────────────── */
+
+    .scenario-cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-top: 48px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .scenario {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      transition: border-color .2s;
+    }
+
+    .scenario:hover { border-color: var(--border-hover); }
+
+    .scenario .scenario-prompt {
+      font-family: var(--font-mono);
+      font-size: .82rem;
+      color: var(--accent-bright);
+      background: rgba(251,146,60,.06);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .scenario-side {
+      padding: 16px;
+      border-radius: var(--radius-sm);
+    }
+
+    .scenario-side--without {
+      background: rgba(248,113,113,.04);
+      border: 1px solid rgba(248,113,113,.12);
+    }
+
+    .scenario-side--with {
+      background: rgba(52,211,153,.04);
+      border: 1px solid rgba(52,211,153,.12);
+    }
+
+    .scenario-side h4 {
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 10px;
+    }
+
+    .scenario-side--without h4 { color: var(--red); }
+    .scenario-side--with h4 { color: var(--green); }
+
+    .scenario-side p {
+      font-size: .85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .scenario-side code {
+      font-family: var(--font-mono);
+      font-size: .75rem;
+      background: rgba(255,255,255,.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent-bright);
+    }
+
+    .scenario-side .scenario-result {
+      margin-top: 10px;
+      font-size: .78rem;
+      font-weight: 600;
+    }
+
+    .scenario-side--without .scenario-result { color: var(--red); }
+    .scenario-side--with .scenario-result { color: var(--green); }
+
+    /* ── Brand architecture table ──────────────────────────── */
+
+    .brand-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 36px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .brand-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      text-align: left;
+    }
+
+    .brand-item h4 {
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .brand-item p {
+      font-size: .85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── Responsive overrides ──────────────────────────────── */
+
+    @media (max-width: 768px) {
+      .landscape-cards { grid-template-columns: 1fr; }
+      .evo-cards { grid-template-columns: 1fr; }
+      .arch-cols { grid-template-columns: 1fr; }
+      .scenario-grid { grid-template-columns: 1fr; }
+      .brand-grid { grid-template-columns: 1fr; }
+      .definition-block { padding: 28px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="glow glow--blend"></div>
+
+<!-- ── Nav ──────────────────────────────────────────────────── -->
+
+<nav class="nav">
+  <div class="container">
+    <a href="index.html" class="nav-brand">
+      <span class="dot"></span>
+      ProductBrain
+    </a>
+    <ul class="nav-links">
+      <li><a href="#landscape">Landscape</a></li>
+      <li><a href="#definition">Definition</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#difference">Difference</a></li>
+      <li><a href="#practice">In Practice</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="https://github.com/synergyai-os/product-os-mcp" class="btn btn-ghost" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://synergyos.ai" class="btn btn-primary" target="_blank" rel="noopener">Get started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════
+     1. HERO
+     ══════════════════════════════════════════════════════════ -->
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge hero-badge--accent">Defining the category</div>
+    <h1>Every AI tool promises to understand your product. None of them <span class="gradient">remember</span> it.</h1>
+    <p class="hero-sub">The AI era created a new problem: assistants that are powerful but amnesiac. They read your code, guess at your domain, and start from zero every conversation. "Product Brain" has been a metaphor &mdash; blogs, mindset articles, marketing speak. We're turning it into infrastructure.</p>
+    <div class="hero-actions">
+      <a href="#definition" class="btn btn-primary">See what a Product Brain is</a>
+      <a href="index.html#install" class="btn btn-ghost">Install ProductBrain</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     2. THE LANDSCAPE
+     ══════════════════════════════════════════════════════════ -->
+
+<section class="fade-in" id="landscape" style="text-align:center; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:linear-gradient(180deg, rgba(251,146,60,.03) 0%, transparent 100%);">
+  <div class="container">
+    <span class="section-label">The term today</span>
+    <h2 class="section-title">"Product Brain" in the wild</h2>
+    <p class="section-sub">The phrase already exists. But not as what you think.</p>
+
+    <div class="landscape-cards">
+
+      <div class="landscape-card">
+        <div class="lc-label">As a mindset</div>
+        <h3>How PMs think</h3>
+        <p>Blog posts and articles use "product brain" to describe the way product managers pattern-match, prioritize, and decide. It's a way of thinking &mdash; not a tool, not a protocol, not a standard.</p>
+      </div>
+
+      <div class="landscape-card">
+        <div class="lc-label">As a content hub</div>
+        <h3>PM frameworks &amp; case studies</h3>
+        <p>Sites like "The Product Brain" offer terminology glossaries, prioritization frameworks, and case studies. Valuable learning resources &mdash; not operational infrastructure your AI can plug into.</p>
+      </div>
+
+      <div class="landscape-card">
+        <div class="lc-label">As marketing language</div>
+        <h3>"Your strategic product brain"</h3>
+        <p>AI PM tools pitch themselves as your "strategic product brain" or "product intelligence platform." It's a positioning line inside a closed app &mdash; not an open standard anyone can build on.</p>
+      </div>
+
+    </div>
+
+    <div class="callout callout--orange" style="margin-top:48px; text-align:left;">
+      <p style="text-align:center; margin:0;"><strong style="color:var(--text);">The term lives in the narrative space &mdash; content, mindset, branding.</strong><br>Nobody has defined it as a technical product category. Until now.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     3. THE DEFINITION
+     ══════════════════════════════════════════════════════════ -->
+
+<section class="fade-in" id="definition" style="text-align:center;">
+  <div class="container">
+    <span class="section-label">The definition</span>
+    <h2 class="section-title">A Product Brain is not an app. It's infrastructure.</h2>
+
+    <div class="definition-block">
+      <div class="definition-term">Product Brain</div>
+      <div class="definition-phonetic">/prod-ukt breyn/ &mdash; noun</div>
+      <div class="definition-body">
+        A <strong>protocol-native knowledge server</strong> that gives AI structured, real-time access to your product's glossary, business rules, decisions, features, and relations. Not a copilot. Not a wiki adapter. Not a RAG pipeline. An <strong>open infrastructure layer</strong> that any AI host can plug into &mdash; built on the Model Context Protocol standard.
+      </div>
+    </div>
+
+    <div class="card-grid" style="margin-top:48px;">
+      <div class="card card--lift">
+        <span class="icon">&#9889;</span>
+        <h3>Protocol-native</h3>
+        <p>Built on the Model Context Protocol (MCP) &mdash; the emerging standard for how AI agents access knowledge and tools. Not bolted onto a REST API or shoehorned into a RAG pipeline. A Product Brain speaks the language AI already understands.</p>
+      </div>
+      <div class="card card--lift">
+        <span class="icon">&#128200;</span>
+        <h3>Structured, not scraped</h3>
+        <p>Knowledge is typed, related, versioned, and quality-scored. Not unstructured documents thrown into a vector database and hoped for the best. A knowledge graph with real semantics &mdash; not a document dump with fuzzy search.</p>
+      </div>
+      <div class="card card--lift">
+        <span class="icon">&#128275;</span>
+        <h3>Open, not locked</h3>
+        <p>MIT licensed. Self-hostable. Your data stays in your infrastructure. Not another SaaS silo where your product knowledge becomes someone else's training data. Fork it. Extend it. Build on it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     4. WHY MCP CHANGES EVERYTHING
+     ══════════════════════════════════════════════════════════ -->
+
+<section class="fade-in" id="protocol" style="text-align:center; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:linear-gradient(180deg, rgba(251,146,60,.03) 0%, transparent 100%);">
+  <div class="container">
+    <span class="section-label">The protocol layer</span>
+    <h2 class="section-title">Closed copilots die. Open protocols compound.</h2>
+    <p class="section-sub">MCP is now the standard way to connect AI models to knowledge and tools. Microsoft, AWS, and Anthropic have adopted it. But nobody has defined a product-management-specific MCP schema. That's the gap.</p>
+
+    <div class="evo-cards">
+
+      <div class="evo-card evo-card--past">
+        <div class="evo-label">Before MCP</div>
+        <h3>Duct tape and prayers</h3>
+        <p>Custom system prompts. RAG pipelines over docs. Manual copy-paste into AI chats. Proprietary APIs that lock you into one vendor's ecosystem. Every integration built from scratch.</p>
+      </div>
+
+      <div class="evo-card evo-card--present">
+        <div class="evo-label">Generic MCP servers</div>
+        <h3>Horizontal, not product-aware</h3>
+        <p>Code servers, CRM connectors, database tools, log aggregators. MCP works beautifully for generic knowledge &mdash; but none of these understand product entities, business rules, or decision history.</p>
+      </div>
+
+      <div class="evo-card evo-card--future">
+        <div class="evo-label">Product Brain MCP</div>
+        <h3>Purpose-built for product work</h3>
+        <p>A canonical MCP server schema for product knowledge. Typed entries. Semantic relations. Quality scoring. Decision history. The missing layer between your product data and your AI tools.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     5. THE ARCHITECTURE
+     ══════════════════════════════════════════════════════════ -->
+
+<section class="fade-in" id="architecture" style="text-align:center;">
+  <div class="container">
+    <span class="section-label">The primitives</span>
+    <h2 class="section-title">Three MCP primitives. One product brain.</h2>
+    <p class="section-sub">MCP defines three ways for AI to interact with a server. ProductBrain implements all three, purpose-built for product knowledge.</p>
+
+    <div class="arch-diagram">
+
+      <div class="arch-hub">
+        <span class="arch-hub-label">ProductBrain MCP Server</span>
+      </div>
+
+      <div class="arch-connector">
+        <span class="arch-dot"></span>
+        <span class="arch-line"></span>
+        <span class="arch-dot"></span>
+        <span class="arch-line"></span>
+        <span class="arch-dot"></span>
+      </div>
+
+      <div class="arch-cols">
+
+        <div class="arch-col">
+          <span class="arch-col-icon">&#128218;</span>
+          <div class="arch-col-type">Resources</div>
+          <h3>The facts</h3>
+          <p>Canonical read access to your product knowledge. Glossary terms, business rules, decisions, feature specs, collections, and relations. Always current. Always structured.</p>
+          <ul class="mono-list">
+            <li>productbrain://orientation</li>
+            <li>productbrain://terminology</li>
+            <li>productbrain://collections</li>
+          </ul>
+        </div>
+
+        <div class="arch-col">
+          <span class="arch-col-icon">&#128295;</span>
+          <div class="arch-col-type">Tools</div>
+          <h3>The actions</h3>
+          <p>Standard operations any AI host can invoke. Search, capture, verify, link, review. Not custom endpoints &mdash; MCP-standard tool calls that work in Cursor, Claude, or any MCP client.</p>
+          <ul class="mono-list">
+            <li>kb-search</li>
+            <li>smart-capture</li>
+            <li>load-context-for-task</li>
+            <li>verify</li>
+            <li>suggest-links</li>
+            <li>review-rules</li>
+          </ul>
+        </div>
+
+        <div class="arch-col">
+          <span class="arch-col-icon">&#129504;</span>
+          <div class="arch-col-type">Prompts</div>
+          <h3>The workflows</h3>
+          <p>Reusable thought-processes codified as MCP prompts. Opportunity analysis, RICE scoring, compliance review, impact sizing. Product thinking any agent can execute on demand.</p>
+          <ul class="mono-list">
+            <li>opportunity-analysis</li>
+            <li>compliance-review</li>
+            <li>impact-sizing</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="callout callout--orange" style="margin-top:48px; text-align:left;">
+      <p style="text-align:center; margin:0;"><strong style="color:var(--text);">This is what makes a Product Brain different from a knowledge base.</strong><br>A KB stores data. A Product Brain exposes it through a protocol that AI can reason with.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     6. COMPARISON
+     ══════════════════════════════════════════════════════════ -->
+
+<section class="fade-in" id="difference" style="text-align:center; border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <span class="section-label">The difference</span>
+    <h2 class="section-title">AI PM Copilot vs. Product Brain</h2>
+    <p class="section-sub">One is a closed app with a marketing phrase. The other is an open protocol you own.</p>
+
+    <div class="compare">
+      <div class="compare-col compare-col--bad">
+        <h3>AI PM Copilot</h3>
+        <ul>
+          <li>Closed app, proprietary integrations</li>
+          <li>Works with one vendor's AI only</li>
+          <li>Your data lives in their cloud</li>
+          <li>Prompt engineering to teach context</li>
+          <li>Starts from zero when you switch tools</li>
+          <li>No standard interface &mdash; vendor lock-in</li>
+          <li>"Product Brain" as a marketing phrase</li>
+        </ul>
+      </div>
+      <div class="compare-col compare-col--good">
+        <h3>Product Brain (MCP)</h3>
+        <ul>
+          <li>Open protocol, standard MCP interface</li>
+          <li>Any AI host: Cursor, Claude, Copilot, custom agents</li>
+          <li>Your data in your infrastructure</li>
+          <li>Structured knowledge graph, auto-loaded</li>
+          <li>Context persists across tools and sessions</li>
+          <li>MCP standard &mdash; portable by design</li>
+          <li>"Product Brain" as a technical category</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     7. IN PRACTICE
+     ══════════════════════════════════════════════════════════ -->
+
+<section class="fade-in" id="practice" style="text-align:center;">
+  <div class="container">
+    <span class="section-label">In practice</span>
+    <h2 class="section-title">What happens when your AI has a Product Brain</h2>
+    <p class="section-sub">Three real scenarios. Same prompt. Wildly different outcomes.</p>
+
+    <div class="scenario-cards">
+
+      <div class="scenario">
+        <div class="scenario-prompt">"Build the supplier validation feature"</div>
+        <div class="scenario-grid">
+          <div class="scenario-side scenario-side--without">
+            <h4>Without Product Brain</h4>
+            <p>AI reads your codebase. Finds <code>vendor</code> in the schema. Generates validation using "vendor" &mdash; your canonical term is "supplier" since Q1. Misses the credit-check rule added last quarter. You re-run 3 times.</p>
+            <div class="scenario-result">3 re-runs. 2 hours lost.</div>
+          </div>
+          <div class="scenario-side scenario-side--with">
+            <h4>With Product Brain</h4>
+            <p>AI calls <code>load-context-for-task</code>. Gets current glossary, business rules, and decision history. Uses "supplier," includes credit check, references the right approval threshold.</p>
+            <div class="scenario-result">First Time Good.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <div class="scenario-prompt">"Write a PRD for the new checkout flow"</div>
+        <div class="scenario-grid">
+          <div class="scenario-side scenario-side--without">
+            <h4>Without Product Brain</h4>
+            <p>AI generates a generic PRD template. Uses "cart" when your team says "basket." Misses the three-step approval constraint for orders above the threshold. You rewrite half of it.</p>
+            <div class="scenario-result">50% rewrite. Wrong terminology.</div>
+          </div>
+          <div class="scenario-side scenario-side--with">
+            <h4>With Product Brain</h4>
+            <p>AI reads <code>productbrain://terminology</code>. Checks <code>review-rules</code> for checkout-related business rules. References actual past decisions. PRD is domain-accurate on the first draft.</p>
+            <div class="scenario-result">Ship-ready first draft.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <div class="scenario-prompt">"Why does this code check for VP approval on orders?"</div>
+        <div class="scenario-grid">
+          <div class="scenario-side scenario-side--without">
+            <h4>Without Product Brain</h4>
+            <p>Code archeology: <code>git blame</code>, Slack search, three wiki pages, ask the person who &mdash; oh wait, they left two months ago. 2-4 hours and a half-answer.</p>
+            <div class="scenario-result">2-4 hours of detective work.</div>
+          </div>
+          <div class="scenario-side scenario-side--with">
+            <h4>With Product Brain</h4>
+            <p>AI calls <code>gather-context</code>. Returns the decision record (who decided, when, why), the business rule it implements, and the linked tension that triggered it. Full picture.</p>
+            <div class="scenario-result">30 seconds. Full context.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     8. THE STANDARD
+     ══════════════════════════════════════════════════════════ -->
+
+<section class="fade-in" id="standard" style="text-align:center; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:linear-gradient(180deg, rgba(251,146,60,.03) 0%, transparent 100%);">
+  <div class="container">
+    <span class="section-label">The standard</span>
+    <h2 class="section-title">ProductBrain isn't just a product. It's a proposed standard.</h2>
+    <p class="section-sub">We're not building another closed tool. We're defining how product knowledge should be structured and served to AI.</p>
+
+    <div class="card-grid" style="margin-top:48px;">
+      <div class="card card--lift">
+        <span class="icon">&#128220;</span>
+        <h3>Canonical schema</h3>
+        <p>A defined MCP server schema for product knowledge: entry types (glossary, business rules, decisions, features, tensions), typed relations, quality scoring, and collection structures.</p>
+      </div>
+      <div class="card card--lift">
+        <span class="icon">&#128187;</span>
+        <h3>Reference implementation</h3>
+        <p>A fully working MCP server anyone can install with <code>npx productbrain</code>. Fork it. Extend it. Build your own Product Brain on top of the same schema. MIT licensed.</p>
+      </div>
+      <div class="card card--lift">
+        <span class="icon">&#127979;</span>
+        <h3>Plugin ecosystem</h3>
+        <p>A marketplace where developers share and sell domain-specific extensions: industry templates, integration connectors, capture workflows. The community defines what product knowledge looks like for every vertical.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:56px;">
+      <span class="section-label">Brand architecture</span>
+      <div class="brand-grid">
+        <div class="brand-item">
+          <h4>ProductBrain</h4>
+          <p>The open source platform. MCP server, knowledge graph, plugin system. MIT licensed. Self-host free forever.</p>
+        </div>
+        <div class="brand-item">
+          <h4>SynergyOS.ai</h4>
+          <p>The company behind ProductBrain. Operates the managed cloud, curates the marketplace, provides enterprise support.</p>
+        </div>
+        <div class="brand-item">
+          <h4>ProductBrain Cloud</h4>
+          <p>Zero-config managed hosting by SynergyOS. Sign up, get an API key, connect your AI. No infrastructure to manage.</p>
+        </div>
+        <div class="brand-item">
+          <h4>ProductBrain Marketplace</h4>
+          <p>The plugin ecosystem. Industry templates, integrations, capture workflows. Build and share extensions for any domain.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     9. CTA
+     ══════════════════════════════════════════════════════════ -->
+
+<section class="cta">
+  <div class="container">
+    <h2>Give your AI a <span class="gradient-text">Product Brain</span>.</h2>
+    <p>5 minutes to install. Zero maintenance. Free forever. Or use ProductBrain Cloud for zero-config hosting by SynergyOS.ai.</p>
+    <div class="cta-actions">
+      <a href="index.html#install" class="btn btn-primary">Install ProductBrain</a>
+      <a href="https://github.com/synergyai-os/product-os-mcp" class="btn btn-ghost" target="_blank" rel="noopener">View on GitHub</a>
+      <a href="https://synergyos.ai" class="btn btn-ghost" target="_blank" rel="noopener">Try ProductBrain Cloud</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ──────────────────────────────────────────────── -->
+
+<footer class="footer">
+  <div class="container">
+    <span>ProductBrain &mdash; MIT License &middot; <a href="https://synergyos.ai" target="_blank" rel="noopener">SynergyOS.ai</a></span>
+    <div class="footer-links">
+      <a href="index.html">Product Page</a>
+      <a href="code-is-not-truth.html">Code Is Not Truth</a>
+      <a href="workflow.html">Workflow Demo</a>
+      <a href="https://github.com/synergyai-os/product-os-mcp" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../shared/animations.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+---
+description: Load Product OS context when starting work that touches the product domain
+alwaysApply: false
+---
+
+# Product OS — Orientation Rule
+
+When starting a new task that involves product domain knowledge, architecture, or data modeling:
+
+1. Fetch the `product-os://orientation` resource to understand the system map
+2. Fetch the `product-os://terminology` resource for naming conventions
+3. Use `list-collections` to see what knowledge structures exist
+
+This gives you the full context before writing a single line of code or making a recommendation.
+
+## When to load orientation
+
+- Beginning of a conversation about product features or architecture
+- Before shaping a bet or writing a pitch
+- Before reviewing code that implements domain logic
+- When the user asks you to "use Product OS" or "check what's there"

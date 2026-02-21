@@ -1,24 +1,72 @@
-# SynergyOS MCP
+# ProductBrain
 
-The single source of truth for product knowledge -- glossary, business rules, tensions, decisions, labels, and relations -- accessible as an MCP server in [Cursor](https://cursor.com).
+> **This is the new repo** — remove this line once validated.
 
-SynergyOS MCP connects your AI coding assistant to your team's product knowledge base. Ask questions, capture decisions, and build a living knowledge graph without leaving your editor.
+The single source of truth for product knowledge — glossary, business rules, tensions, decisions, labels, and relations — accessible as an MCP server in [Claude Desktop](https://claude.ai/download), [Cursor](https://cursor.com), and any MCP-compatible AI assistant.
 
-## Quick Start
+ProductBrain connects your AI assistant to your team's knowledge base. Ask questions, capture decisions, and build a living knowledge graph without leaving your editor.
 
-### 1. Install in Cursor
+## Quick Start (Cloud)
 
-Add this to your Cursor MCP config (`.cursor/mcp.json`):
+### 1. Get your API key
+
+Go to **SynergyOS → Settings → API Keys** and click **Generate Key**. Copy the `pb_sk_...` key.
+
+### 2. Configure your AI assistant
+
+**Claude Desktop** — edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
-    "synergyos": {
+    "productbrain": {
       "command": "npx",
-      "args": ["-y", "synergyos-mcp"],
+      "args": ["-y", "productbrain"],
+      "env": {
+        "PRODUCTBRAIN_API_KEY": "pb_sk_your_key_here"
+      }
+    }
+  }
+}
+```
+
+**Cursor** — edit `.cursor/mcp.json` in your project:
+
+```json
+{
+  "mcpServers": {
+    "productbrain": {
+      "command": "npx",
+      "args": ["-y", "productbrain"],
+      "env": {
+        "PRODUCTBRAIN_API_KEY": "pb_sk_your_key_here"
+      }
+    }
+  }
+}
+```
+
+### 3. Restart your assistant and verify
+
+Ask:
+
+> "Use the health tool to check ProductBrain connectivity"
+
+You should see your workspace ID, collection count, and latency.
+
+## Self-Hosted Setup
+
+If you're running your own Convex deployment, use the three-variable config:
+
+```json
+{
+  "mcpServers": {
+    "productbrain": {
+      "command": "npx",
+      "args": ["-y", "productbrain"],
       "env": {
         "CONVEX_SITE_URL": "https://your-deployment.convex.site",
-        "MCP_API_KEY": "your-secret-api-key",
+        "MCP_API_KEY": "your-shared-api-key",
         "WORKSPACE_SLUG": "your-workspace-slug"
       }
     }
@@ -26,23 +74,26 @@ Add this to your Cursor MCP config (`.cursor/mcp.json`):
 }
 ```
 
-### 2. Get Your Credentials
-
-You need a SynergyOS account to use SynergyOS MCP.
-
 | Variable | Where to find it |
 |----------|-----------------|
-| `CONVEX_SITE_URL` | Convex dashboard > Settings > URL & Deploy Key (use the `*.convex.site` URL, **not** `*.convex.cloud`) |
-| `MCP_API_KEY` | Your API key from SynergyOS -- must also be set in the Convex dashboard environment variables |
-| `WORKSPACE_SLUG` | Your workspace slug from the portal URL (`/ws-<slug>/...`) |
+| `CONVEX_SITE_URL` | Convex dashboard → Settings → URL (use `*.convex.site`, not `*.convex.cloud`) |
+| `MCP_API_KEY` | Must match the `MCP_API_KEY` env var in your Convex deployment |
+| `WORKSPACE_SLUG` | Your workspace slug from the SynergyOS URL |
 
-### 3. Verify It Works
+## Dev vs Production
 
-In Cursor, ask:
+Set `PRODUCTBRAIN_URL` to switch between environments:
 
-> "Use the health tool to check SynergyOS connectivity"
+```json
+{
+  "env": {
+    "PRODUCTBRAIN_API_KEY": "pb_sk_your_key_here",
+    "PRODUCTBRAIN_URL": "http://localhost:3210"
+  }
+}
+```
 
-You should see a response with your workspace ID, collection count, and latency.
+Omit `PRODUCTBRAIN_URL` to default to production.
 
 ## What You Can Do
 
@@ -61,7 +112,7 @@ You should see a response with your workspace ID, collection count, and latency.
 ### Navigate the knowledge graph
 
 - *"Gather full context around FEAT-001"*
-- *"What entries are related to the glossary term GT-019?"*
+- *"What entries are related to GT-019?"*
 - *"Suggest links for this new tension"*
 
 ### Check quality
@@ -99,11 +150,11 @@ You should see a response with your workspace ID, collection count, and latency.
 
 | URI | Content |
 |-----|---------|
-| `product-os://orientation` | System map: architecture, data model, rules, analytics |
-| `product-os://terminology` | Glossary + standards summary |
-| `product-os://collections` | All collection schemas with field definitions |
-| `product-os://{slug}/entries` | All entries in a given collection |
-| `product-os://labels` | Workspace labels with hierarchy |
+| `productbrain://orientation` | System map: architecture, data model, rules, analytics |
+| `productbrain://terminology` | Glossary + standards summary |
+| `productbrain://collections` | All collection schemas with field definitions |
+| `productbrain://{slug}/entries` | All entries in a given collection |
+| `productbrain://labels` | Workspace labels with hierarchy |
 
 ## Prompts
 
@@ -117,42 +168,42 @@ You should see a response with your workspace ID, collection count, and latency.
 ## Security
 
 - **Your data stays yours.** The MCP server connects only to your authenticated Convex deployment. No data is shared with third parties.
-- **API key handling.** Your `MCP_API_KEY` is stored in your local environment and sent as a Bearer token to your own Convex backend. It is never logged or exposed.
-- **Workspace scoping.** All operations are scoped to your `WORKSPACE_SLUG`. No cross-workspace access is possible.
+- **API key handling.** Cloud keys (`pb_sk_...`) are SHA-256 hashed before storage. Only the prefix is persisted for display. Keys are sent as Bearer tokens over HTTPS.
+- **Workspace scoping.** Each API key is bound to a single workspace. No cross-workspace access is possible.
 - **Analytics are opt-in.** Set `POSTHOG_MCP_KEY` to enable usage analytics. Omit it entirely to disable all tracking.
 
 ## Troubleshooting
 
+### "Missing API key" or "Invalid API key"
+
+Your `PRODUCTBRAIN_API_KEY` is missing or incorrect. Generate a new key from SynergyOS Settings → API Keys.
+
 ### "CONVEX_SITE_URL environment variable is required"
 
-Your MCP config is missing the `env` block or the variable is empty. Make sure all three required variables are set in `.cursor/mcp.json`.
+You're using self-hosted mode but missing the `env` block. Make sure all three variables are set.
 
-### "Workspace with slug 'X' not found"
+### "Workspace not found"
 
-The `WORKSPACE_SLUG` doesn't match any workspace in your Convex deployment. Check the portal URL for the correct slug.
-
-### "MCP call failed (401)"
-
-Your `MCP_API_KEY` doesn't match the one set in the Convex dashboard environment variables. Verify both sides match.
+For self-hosted: check your `WORKSPACE_SLUG`. For cloud: your API key may have been revoked.
 
 ### "MCP call network error"
 
-The `CONVEX_SITE_URL` is unreachable. Make sure you're using the `*.convex.site` URL (not `*.convex.cloud`) and that your Convex deployment is running.
+The backend is unreachable. If using `PRODUCTBRAIN_URL`, verify the URL is correct and the server is running.
 
-### Server doesn't appear in Cursor
+### Server doesn't appear in Claude Desktop / Cursor
 
-Restart Cursor after editing `.cursor/mcp.json`. Check the MCP panel (Cmd+Shift+P > "MCP: Show Panel") for startup errors.
+Restart the application after editing the config file. In Cursor, check the MCP panel (Cmd+Shift+P → "MCP: Show Panel") for startup errors.
 
 ### Enable debug logging
 
-Set `MCP_DEBUG=1` in your MCP config's `env` block to see `[MCP-ANALYTICS]` and `[MCP-AUDIT]` logs in stderr. By default these are suppressed for a quieter experience.
+Set `MCP_DEBUG=1` in your config's `env` block to see audit logs in stderr.
 
 ## Development
 
 ```bash
 # Clone and install
-git clone https://github.com/synergyai-os/product-os-mcp.git
-cd product-os-mcp
+git clone https://github.com/synergyai-os/productbrain.git
+cd productbrain
 npm install
 
 # Copy env template and fill in your values
@@ -170,14 +221,9 @@ npm start
 # Typecheck
 npm run typecheck
 
-# Publish prerelease (uses --tag=beta so it won't become latest)
+# Publish beta
 npm run publish:beta
-
-# Bump prerelease version (e.g. 0.1.0-beta.0 → 0.1.0-beta.1)
-npm run version:prerelease
 ```
-
-**Installing prerelease:** `npx synergyos-mcp@beta` or `npm install synergyos-mcp@beta`
 
 ## License
 

@@ -1,0 +1,40 @@
+---
+description: Always check Product OS knowledge base before answering product, domain, or terminology questions
+alwaysApply: true
+---
+
+# Product OS — KB-First Rule
+
+You have access to the `synergyos` MCP server, which is the team's single source of truth for product knowledge.
+
+> **Note:** The `load-context-for-task` tool (triggered by the Auto-Context Rule) handles bulk KB loading at conversation start. This rule governs **mid-conversation** KB lookups — when a new domain concept surfaces during work that wasn't part of the initial context load.
+
+## When to search the KB FIRST (before answering)
+
+- Any question about what something *is*, *means*, or *how it works* in the product domain
+- Naming or terminology questions ("what do we call X?", "what is a tension?")
+- Questions about business rules, policies, or constraints
+- Questions about features, decisions, or architecture rationale
+- When someone asks "what is [product concept]?" or "explain [domain term]"
+- When reviewing or writing code that touches domain concepts
+
+## How to search
+
+1. Use `kb-search` with relevant keywords to find existing entries
+2. If the search returns results, use `get-entry` to get full details before answering
+3. If no results, say so — don't silently skip the KB and make up an answer
+4. Always cite the KB entry ID (e.g. GT-019, BR-005) when referencing KB content
+
+## What NOT to search for
+
+- Generic programming questions (how to use a library, syntax help)
+- Infrastructure/DevOps questions unrelated to the product domain
+- Questions the user explicitly says are about external topics
+
+## Response pattern
+
+When KB entries exist:
+> "According to [ENTRY-ID] in Product OS: [definition/rule/context]. [Your additional analysis if needed]."
+
+When no KB entries exist:
+> "I searched Product OS but found no entries for '[term]'. [Your best answer]. Want me to capture this as a new [glossary term / tension / decision]?"

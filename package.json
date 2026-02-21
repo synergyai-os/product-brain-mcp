@@ -1,9 +1,10 @@
 {
-  "name": "synergyos-mcp",
-  "version": "0.1.0-beta.1",
-  "description": "SynergyOS MCP server — single source of truth for product knowledge in Cursor. Glossary, business rules, tensions, decisions, labels, and relations.",
+  "name": "productbrain",
+  "version": "0.2.0-beta.1",
+  "description": "ProductBrain MCP server — single source of truth for product knowledge in Cursor, Claude Desktop, and any MCP-compatible AI assistant.",
   "type": "module",
   "bin": {
+    "productbrain": "dist/cli/index.js",
     "synergyos-mcp": "dist/index.js"
   },
   "files": [
@@ -24,25 +25,28 @@
     "version:prerelease": "npm version prerelease"
   },
   "keywords": [
+    "productbrain",
     "synergyos",
     "mcp",
     "model-context-protocol",
     "cursor",
+    "claude-desktop",
     "product-management",
     "knowledge-base",
     "glossary",
     "business-rules",
     "terminology"
   ],
-  "author": "SynergyAI OS",
+  "author": "SynergyOS.ai",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/synergyai-os/product-os-mcp.git"
+    "url": "git+https://github.com/synergyai-os/productbrain.git"
   },
-  "homepage": "https://github.com/synergyai-os/product-os-mcp#readme",
+  "homepage": "https://github.com/synergyai-os/productbrain#readme",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
+    "convex": "^1.32.0",
     "posthog-node": "^5.24.17",
     "zod": "^3.23.0"
   },

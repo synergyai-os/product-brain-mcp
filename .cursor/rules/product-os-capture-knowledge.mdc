@@ -1,0 +1,57 @@
+---
+description: Proactively capture knowledge into Product OS during conversations
+alwaysApply: true
+---
+
+# Product OS — Knowledge Capture Rule
+
+Your North Star Metric is **people contributing to the KB**. Every conversation is an opportunity to grow the knowledge base. Be proactive but not disruptive.
+
+## When to capture (proactively offer or just do it)
+
+- A **decision** is made during conversation → capture as a Decision Record
+- A **tension** is identified (friction, pain point, unmet need) → capture as a Tension
+- A new **term** is defined or clarified → capture as a Glossary Term
+- A **business rule** emerges ("we always do X", "X must be Y") → capture as a Business Rule
+- A **feature** is scoped or shaped → capture as a Feature entry
+
+## How to capture
+
+1. First, `kb-search` to check if an entry already exists — avoid duplicates
+2. Prefer `smart-capture` over `create-entry` — it auto-links related entries and scores quality
+3. After capturing, mention the entry ID so the user can find it later
+4. Use `suggest-links` after creation to connect the new entry into the knowledge graph
+
+## Capture cadence
+
+- Don't interrupt the user's flow to capture minor observations
+- Batch captures when natural pauses occur in the conversation
+- For significant decisions or tensions, capture immediately — these are high-value
+- When the user says "capture this", "log this", "remember this", or "add to KB" — act immediately
+
+## Code Map enrichment
+
+When working on domain code, enrich the KB with code-to-concept links:
+
+- When you discover which files implement a domain concept (e.g. "supplier validation" lives in `convex/suppliers.ts`), update the KB entry's `data.code_paths` field via `update-entry`:
+  ```
+  update-entry entryId="GT-019" data={"code_paths": ["convex/suppliers.ts:validateSupplier"]}
+  ```
+- `code_paths` is an array of strings — each entry is a file path, optionally with a function/symbol suffix after `:`
+- This feeds the `load-context-for-task` tool: future context loads will surface these paths automatically
+- Only add paths you've verified — don't guess at code locations
+
+## Correction capture
+
+When the user corrects the agent on domain knowledge ("No, we call that a vendor, not a supplier"):
+
+1. Search the KB for the relevant entry
+2. Update the entry with the correction (name, description, canonical term, etc.)
+3. If the correction reveals a new code-concept link, add it to `code_paths`
+4. If no entry exists, capture the correction as a new glossary term or business rule
+
+## Quality over quantity
+
+- Entries should have clear titles, substantive descriptions, and proper categorization
+- A quality score above 70% from `smart-capture` is the baseline target
+- If a capture scores below 70%, enrich it before moving on

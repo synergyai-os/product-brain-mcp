@@ -250,7 +250,7 @@ export function registerVerifyTools(server: McpServer) {
             type: "text" as const,
             text: "# Verification Failed\n\n" +
               "Cannot find project root (looked for `convex/schema.ts` in cwd and parent directory).\n\n" +
-              "Set `WORKSPACE_PATH` in `.env.mcp` to the absolute path of the Product OS project root.",
+              "Set `WORKSPACE_PATH` in `.env.mcp` to the absolute path of the ProductBrain project root.",
           }],
         };
       }

@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketing &amp; Growth — SynergyOS.ai</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+    :root {
+      --bg: #09090b;
+      --bg-subtle: #111113;
+      --bg-card: #18181b;
+      --border: #27272a;
+      --border-hover: #3f3f46;
+      --text: #fafafa;
+      --text-muted: #a1a1aa;
+      --text-dim: #71717a;
+      --accent: #818cf8;
+      --accent-bright: #a5b4fc;
+      --accent-dim: #4f46e5;
+      --green: #34d399;
+      --red: #f87171;
+      --orange: #fb923c;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    html {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body { overflow-x: hidden; }
+
+    .glow {
+      position: fixed;
+      top: -30vh;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80vw;
+      height: 60vh;
+      background: radial-gradient(ellipse at center, rgba(251,146,60,.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Nav ───────────────────────────────────────────────── */
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      background: rgba(9,9,11,.8);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+    }
+
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .nav-brand .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--orange);
+      border-radius: 50%;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: .875rem;
+      font-weight: 500;
+      transition: color .15s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-size: .875rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all .15s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary { background: var(--orange); color: #fff; }
+    .btn-primary:hover { background: #fdba74; }
+    .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { color: var(--text); border-color: var(--border-hover); background: var(--bg-subtle); }
+
+    /* ── Header ────────────────────────────────────────────── */
+
+    .page-header {
+      padding: 100px 0 60px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-header .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(251,146,60,.25);
+      background: rgba(251,146,60,.08);
+      font-size: .8rem;
+      color: var(--orange);
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+
+    .page-header h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      max-width: 700px;
+      margin: 0 auto 16px;
+    }
+
+    .page-header h1 .gradient {
+      background: linear-gradient(135deg, var(--orange), #c084fc);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-header p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── Sections ──────────────────────────────────────────── */
+
+    section { padding: 80px 0; }
+
+    .section-label {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--orange);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .section-sub {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 12px auto 0;
+      line-height: 1.7;
+    }
+
+    /* ── North Star ────────────────────────────────────────── */
+
+    .north-star {
+      text-align: center;
+      background: linear-gradient(180deg, rgba(251,146,60,.05) 0%, transparent 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ns-card {
+      max-width: 700px;
+      margin: 40px auto 0;
+      padding: 40px;
+      border-radius: var(--radius);
+      background: rgba(251,146,60,.06);
+      border: 1px solid rgba(251,146,60,.2);
+      text-align: left;
+    }
+
+    .ns-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--orange);
+      margin-bottom: 8px;
+    }
+
+    .ns-card .metric {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+    }
+
+    .ns-card p {
+      color: var(--text-muted);
+      font-size: .95rem;
+      line-height: 1.7;
+    }
+
+    /* ── Messaging Pillars ─────────────────────────────────── */
+
+    .pillars { text-align: center; }
+
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .pillar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      text-align: left;
+      transition: border-color .2s;
+    }
+
+    .pillar-card:hover { border-color: var(--border-hover); }
+
+    .pillar-card .pillar-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: .75rem;
+      font-weight: 700;
+      background: rgba(251,146,60,.12);
+      color: var(--orange);
+      margin-bottom: 16px;
+    }
+
+    .pillar-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .pillar-card p {
+      color: var(--text-muted);
+      font-size: .875rem;
+      line-height: 1.6;
+    }
+
+    /* ── Workstreams ───────────────────────────────────────── */
+
+    .workstreams { text-align: center; }
+
+    .ws-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .ws-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      text-align: left;
+      transition: border-color .2s, transform .2s;
+    }
+
+    .ws-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    .ws-card .ws-status {
+      display: inline-block;
+      font-size: .65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+
+    .ws-active { background: rgba(52,211,153,.12); color: var(--green); }
+    .ws-planned { background: rgba(129,140,248,.12); color: var(--accent-bright); }
+    .ws-idea { background: rgba(161,161,170,.12); color: var(--text-muted); }
+
+    .ws-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .ws-card p {
+      color: var(--text-muted);
+      font-size: .85rem;
+      line-height: 1.6;
+    }
+
+    .ws-card .ws-output {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: .78rem;
+      color: var(--text-dim);
+    }
+
+    .ws-card .ws-output strong {
+      color: var(--text-muted);
+    }
+
+    /* ── Flywheel ──────────────────────────────────────────── */
+
+    .flywheel {
+      text-align: center;
+      background: linear-gradient(180deg, transparent 0%, rgba(251,146,60,.04) 100%);
+    }
+
+    .flywheel-diagram {
+      margin: 48px auto 0;
+      max-width: 700px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+    }
+
+    .fw-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px 0;
+      text-align: left;
+    }
+
+    .fw-step + .fw-step {
+      border-top: 1px solid var(--border);
+    }
+
+    .fw-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: .8rem;
+      font-weight: 700;
+      background: rgba(251,146,60,.12);
+      color: var(--orange);
+    }
+
+    .fw-text h4 {
+      font-size: .95rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .fw-text p {
+      color: var(--text-muted);
+      font-size: .85rem;
+      line-height: 1.5;
+    }
+
+    .fw-arrow {
+      text-align: center;
+      color: var(--orange);
+      font-size: .8rem;
+      padding: 4px 0;
+    }
+
+    /* ── Product Brain ─────────────────────────────────────── */
+
+    .product-brain {
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .pb-callout {
+      max-width: 700px;
+      margin: 40px auto 0;
+      padding: 32px;
+      border-radius: var(--radius);
+      background: rgba(192,132,252,.06);
+      border: 1px solid rgba(192,132,252,.2);
+      text-align: left;
+    }
+
+    .pb-callout h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #c084fc;
+      margin-bottom: 12px;
+    }
+
+    .pb-callout p {
+      color: var(--text-muted);
+      font-size: .9rem;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
+    .pb-callout p:last-child { margin-bottom: 0; }
+
+    .pb-callout strong { color: var(--text); }
+
+    .pb-flow {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .pb-flow-item {
+      padding: 20px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .pb-flow-item .pb-icon { font-size: 1.3rem; margin-bottom: 8px; display: block; }
+    .pb-flow-item h4 { font-size: .85rem; font-weight: 600; margin-bottom: 4px; }
+    .pb-flow-item p { color: var(--text-dim); font-size: .78rem; line-height: 1.5; }
+
+    /* ── Footer ────────────────────────────────────────────── */
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+    }
+
+    footer .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: .8rem;
+      color: var(--text-dim);
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color .15s;
+    }
+
+    footer a:hover { color: var(--text); }
+
+    /* ── Responsive ────────────────────────────────────────── */
+
+    @media (max-width: 768px) {
+      section { padding: 60px 0; }
+      .page-header { padding: 72px 0 48px; }
+      .nav-links { display: none; }
+      .pillar-grid, .ws-grid { grid-template-columns: 1fr; }
+      .pb-flow { grid-template-columns: 1fr; }
+    }
+
+    /* ── Scroll animations ─────────────────────────────────── */
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+<div class="glow"></div>
+
+<!-- ── Nav ──────────────────────────────────────────────────── -->
+
+<nav>
+  <div class="container">
+    <a href="product-os-mcp/index.html" class="nav-brand">
+      <span class="dot"></span>
+      SynergyOS<span style="color:var(--text-dim);font-weight:400">.ai</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#north-star">North Star</a></li>
+      <li><a href="#messaging">Messaging</a></li>
+      <li><a href="#workstreams">Workstreams</a></li>
+      <li><a href="#flywheel">Flywheel</a></li>
+      <li><a href="#brain">Product Brain</a></li>
+    </ul>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a href="product-os-mcp/index.html" class="btn btn-ghost">Product Page</a>
+      <a href="https://github.com/synergyai-os/product-os-mcp" class="btn btn-ghost" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Header ──────────────────────────────────────────────── -->
+
+<header class="page-header">
+  <div class="container">
+    <div class="badge">Marketing &amp; Growth</div>
+    <h1>The <span class="gradient">growth engine</span> for Product OS</h1>
+    <p>Strategy, messaging, and growth work for SynergyOS.ai. Everything here feeds into our Product Brain &mdash; the single source of truth for how we talk about, position, and grow the product.</p>
+  </div>
+</header>
+
+<!-- ── North Star ──────────────────────────────────────────── -->
+
+<section class="north-star fade-in" id="north-star">
+  <div class="container">
+    <span class="section-label">North Star Metric</span>
+    <h2 class="section-title">First Time Good %</h2>
+    <p class="section-sub">The percentage of work that ships correctly, coherently, on the first attempt.</p>
+
+    <div class="ns-card">
+      <h3>Why this metric drives everything</h3>
+      <div class="metric">First attempt = final attempt</div>
+      <p>Every re-run, every "that's not how we do it," every rework cycle is waste. Product OS exists to eliminate that waste by giving your AI (and your team) the Critical Context it needs to get it right the first time. When First Time Good % goes up, rework goes down, velocity goes up, and teams get time back to think deeply &mdash; or simply rest.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Messaging Pillars ───────────────────────────────────── -->
+
+<section class="pillars fade-in" id="messaging">
+  <div class="container">
+    <span class="section-label">Core Messaging</span>
+    <h2 class="section-title">Three pillars of the Product OS story</h2>
+    <p class="section-sub">Every piece of marketing content should reinforce one or more of these pillars.</p>
+
+    <div class="pillar-grid">
+      <div class="pillar-card">
+        <span class="pillar-num">1</span>
+        <h3>Critical Context is the moat</h3>
+        <p>Only Product OS delivers the right information, at the right time, in the right quantity to an LLM. No prompt engineering, no wiki spelunking, no context windows stuffed with irrelevant noise. Your AI just knows your product.</p>
+      </div>
+      <div class="pillar-card">
+        <span class="pillar-num">2</span>
+        <h3>Effortless setup, compounding value</h3>
+        <p>Five minutes to install. Zero maintenance. The more your team uses it, the richer the context becomes, the better the output, the more people want to use it. Growth is built into the product mechanics.</p>
+      </div>
+      <div class="pillar-card">
+        <span class="pillar-num">3</span>
+        <h3>Build coherently, ship confidently</h3>
+        <p>Product OS replaces scattered wikis, tribal knowledge, and prompt gymnastics with a living knowledge graph. The result: coherent products built by teams that aren't drowning in rework.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Workstreams ──────────────────────────────────────────── -->
+
+<section class="workstreams fade-in" id="workstreams">
+  <div class="container">
+    <span class="section-label">Growth Workstreams</span>
+    <h2 class="section-title">What we're working on</h2>
+    <p class="section-sub">Active and planned marketing and growth initiatives. Outputs feed directly into the Product Brain.</p>
+
+    <div class="ws-grid">
+      <div class="ws-card">
+        <span class="ws-status ws-active">Active</span>
+        <h3>Product landing page</h3>
+        <p>The main marketing page for Product OS MCP. Communicates Critical Context, First Time Good %, and the value flywheel.</p>
+        <div class="ws-output"><strong>Output:</strong> product-os-mcp/index.html</div>
+      </div>
+      <div class="ws-card">
+        <span class="ws-status ws-active">Active</span>
+        <h3>Positioning &amp; messaging</h3>
+        <p>Core narrative, value pillars, and competitive differentiation. The foundation for all other marketing work.</p>
+        <div class="ws-output"><strong>Output:</strong> Messaging pillars, taglines, one-liners</div>
+      </div>
+      <div class="ws-card">
+        <span class="ws-status ws-active">Active</span>
+        <h3>Code &ne; Truth campaign</h3>
+        <p>"Your code is not your source of truth." A provocative angle showing how decisions fossilize in code while business rules keep evolving.</p>
+        <div class="ws-output"><strong>Output:</strong> <a href="product-os-mcp/code-is-not-truth.html" style="color:var(--accent-bright)">code-is-not-truth.html</a></div>
+      </div>
+      <div class="ws-card">
+        <span class="ws-status ws-planned">Planned</span>
+        <h3>Content strategy</h3>
+        <p>Blog posts, tutorials, and case studies showing how Product OS transforms AI-assisted development workflows.</p>
+        <div class="ws-output"><strong>Output:</strong> Editorial calendar, drafts, published content</div>
+      </div>
+      <div class="ws-card">
+        <span class="ws-status ws-planned">Planned</span>
+        <h3>Developer relations</h3>
+        <p>Community building, open-source evangelism, conference talks, and integration partnerships with the MCP ecosystem.</p>
+        <div class="ws-output"><strong>Output:</strong> Talk proposals, community docs, partner briefs</div>
+      </div>
+      <div class="ws-card">
+        <span class="ws-status ws-planned">Planned</span>
+        <h3>Growth experiments</h3>
+        <p>Activation funnels, onboarding optimization, viral loops through shared workspaces, and usage-driven engagement.</p>
+        <div class="ws-output"><strong>Output:</strong> Experiment specs, results, playbooks</div>
+      </div>
+      <div class="ws-card">
+        <span class="ws-status ws-idea">Idea</span>
+        <h3>Social proof &amp; case studies</h3>
+        <p>Real stories from teams using Product OS. Before/after comparisons. Quantified First Time Good % improvements.</p>
+        <div class="ws-output"><strong>Output:</strong> Testimonials, case study pages</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Flywheel ────────────────────────────────────────────── -->
+
+<section class="flywheel fade-in" id="flywheel">
+  <div class="container">
+    <span class="section-label">Growth Model</span>
+    <h2 class="section-title">The context flywheel</h2>
+    <p class="section-sub">Product-led growth powered by compounding knowledge.</p>
+
+    <div class="flywheel-diagram">
+      <div class="fw-step">
+        <span class="fw-num">1</span>
+        <div class="fw-text">
+          <h4>Team adopts Product OS</h4>
+          <p>5-minute setup. AI assistant immediately starts pulling from the knowledge base.</p>
+        </div>
+      </div>
+      <div class="fw-step">
+        <span class="fw-num">2</span>
+        <div class="fw-text">
+          <h4>Knowledge gets captured naturally</h4>
+          <p>Decisions, rules, terms, and tensions are captured during normal work &mdash; no extra effort.</p>
+        </div>
+      </div>
+      <div class="fw-step">
+        <span class="fw-num">3</span>
+        <div class="fw-text">
+          <h4>Context becomes richer and more accurate</h4>
+          <p>Every entry enriches the knowledge graph. Connections emerge. The AI gets smarter about your product.</p>
+        </div>
+      </div>
+      <div class="fw-step">
+        <span class="fw-num">4</span>
+        <div class="fw-text">
+          <h4>First Time Good % goes up</h4>
+          <p>Better context means better first attempts. Less rework, less "that's not how we do it."</p>
+        </div>
+      </div>
+      <div class="fw-step">
+        <span class="fw-num">5</span>
+        <div class="fw-text">
+          <h4>More people want to use it</h4>
+          <p>Quality output drives engagement. Engagement drives more knowledge capture. The flywheel accelerates.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Product Brain ───────────────────────────────────────── -->
+
+<section class="product-brain fade-in" id="brain">
+  <div class="container">
+    <span class="section-label">Knowledge Integration</span>
+    <h2 class="section-title">Everything feeds the Product Brain</h2>
+    <p class="section-sub">Marketing outputs aren't throwaway artifacts. They become structured knowledge in the Product Brain.</p>
+
+    <div class="pb-callout">
+      <h3>What is the Product Brain?</h3>
+      <p>The Product Brain is the living knowledge graph behind SynergyOS &mdash; the same system Product OS MCP gives your AI access to. Marketing insights, positioning decisions, audience learnings, and growth experiment results all get captured as structured entries with typed relations.</p>
+      <p><strong>This means our marketing knowledge compounds just like product knowledge.</strong> A positioning decision from six months ago stays connected to the messaging pillar it influenced, the content it spawned, and the growth metric it moved.</p>
+    </div>
+
+    <div class="pb-flow">
+      <div class="pb-flow-item">
+        <span class="pb-icon">&#128172;</span>
+        <h4>Positioning</h4>
+        <p>Messaging, taglines, narratives</p>
+      </div>
+      <div class="pb-flow-item">
+        <span class="pb-icon">&#128200;</span>
+        <h4>Growth Data</h4>
+        <p>Experiment results, funnel metrics</p>
+      </div>
+      <div class="pb-flow-item">
+        <span class="pb-icon">&#128214;</span>
+        <h4>Content</h4>
+        <p>Articles, tutorials, case studies</p>
+      </div>
+      <div class="pb-flow-item">
+        <span class="pb-icon">&#127793;</span>
+        <h4>Decisions</h4>
+        <p>Why we chose this angle, not that one</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ──────────────────────────────────────────────── -->
+
+<footer>
+  <div class="container">
+    <span>Marketing &amp; Growth &mdash; <a href="product-os-mcp/index.html">Product OS MCP</a> &middot; <a href="https://synergyos.ai" target="_blank" rel="noopener">SynergyOS.ai</a></span>
+    <div style="display:flex;gap:20px;align-items:center">
+      <a href="product-os-mcp/index.html">Product Page</a>
+      <a href="https://github.com/synergyai-os/product-os-mcp" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      }
+    },
+    { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+  );
+  document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
+</script>
+
+</body>
+</html>

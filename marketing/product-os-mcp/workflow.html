@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Chat Workflow — Product OS MCP | SynergyOS.ai</title>
+  <meta name="description" content="Watch how Product OS turns 4 AI conversations into shipped, coherent code. Shape, scope, write tickets, and build — all grounded in a living knowledge base.">
+  <meta property="og:title" content="AI Chat Workflow — From Idea to Code in 4 Conversations">
+  <meta property="og:description" content="Watch how Product OS turns 4 AI conversations into shipped, coherent code — zero rework.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SynergyOS.ai">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+    :root {
+      --bg: #09090b;
+      --bg-subtle: #111113;
+      --bg-card: #18181b;
+      --border: #27272a;
+      --border-hover: #3f3f46;
+      --text: #fafafa;
+      --text-muted: #a1a1aa;
+      --text-dim: #71717a;
+      --accent: #818cf8;
+      --accent-bright: #a5b4fc;
+      --accent-dim: #4f46e5;
+      --green: #34d399;
+      --red: #f87171;
+      --orange: #fb923c;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    html {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body { overflow-x: hidden; }
+
+    .glow {
+      position: fixed;
+      top: -30vh;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80vw;
+      height: 60vh;
+      background: radial-gradient(ellipse at center, rgba(99,102,241,.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Nav ────────────────────────────────────────────── */
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      background: rgba(9,9,11,.8);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+    }
+
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .nav-brand .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-size: .875rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all .15s;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-bright); }
+    .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { color: var(--text); border-color: var(--border-hover); background: var(--bg-subtle); }
+
+    /* ── Hero ───────────────────────────────────────────── */
+
+    .wf-hero {
+      padding: 100px 0 60px;
+      text-align: center;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .wf-hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      max-width: 800px;
+      margin: 0 auto 20px;
+    }
+
+    .wf-hero h1 .gradient {
+      background: linear-gradient(135deg, var(--accent-bright), #c084fc, var(--orange));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .wf-hero p {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+
+    .wf-hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ── Journey Progress Bar ──────────────────────────── */
+
+    .wf-journey {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      max-width: 480px;
+      margin: 0 auto 24px;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity .4s ease, max-height .4s ease, margin .4s ease;
+    }
+
+    .wf-journey.active {
+      opacity: 1;
+      max-height: 60px;
+      margin-bottom: 24px;
+    }
+
+    .wf-jstep {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      min-width: 60px;
+    }
+
+    .wf-jdot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: transparent;
+      transition: all .4s ease;
+      flex-shrink: 0;
+    }
+
+    .wf-jdot.current {
+      border-color: var(--accent);
+      background: var(--accent);
+      box-shadow: 0 0 14px rgba(129,140,248,.5);
+    }
+
+    .wf-jdot.done {
+      border-color: var(--green);
+      background: var(--green);
+      box-shadow: none;
+    }
+
+    .wf-jlabel {
+      font-size: .68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-dim);
+      transition: color .3s ease;
+    }
+
+    .wf-jlabel.current { color: var(--accent-bright); }
+    .wf-jlabel.done { color: var(--green); }
+
+    .wf-jline {
+      width: 52px;
+      height: 2px;
+      background: var(--border);
+      margin-top: 6px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wf-jline::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 0;
+      height: 100%; width: 100%;
+      background: var(--green);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .5s ease;
+    }
+
+    .wf-jline.filled::after { transform: scaleX(1); }
+
+    /* ── Tabs ──────────────────────────────────────────── */
+
+    .wf-showcase { padding: 0 0 80px; }
+
+    .wf-tabs {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .wf-tab {
+      padding: 8px 20px;
+      border-radius: 999px;
+      font-size: .82rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all .2s ease;
+      font-family: inherit;
+    }
+
+    .wf-tab:hover { color: var(--text); border-color: var(--border-hover); background: var(--bg-subtle); }
+
+    .wf-tab.active {
+      background: var(--accent-dim);
+      border-color: var(--accent-dim);
+      color: #fff;
+    }
+
+    .wf-tab.done {
+      border-color: rgba(52,211,153,.3);
+      color: var(--green);
+    }
+
+    .wf-tab.done.active {
+      background: rgba(52,211,153,.15);
+      border-color: rgba(52,211,153,.3);
+      color: var(--green);
+    }
+
+    /* ── Chat Window ───────────────────────────────────── */
+
+    .wf-chat {
+      max-width: 800px;
+      margin: 0 auto;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      box-shadow: 0 24px 80px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.03) inset;
+      transition: box-shadow .4s ease;
+    }
+
+    .wf-chat.journey {
+      box-shadow: 0 24px 80px rgba(0,0,0,.4), 0 0 40px rgba(99,102,241,.08), 0 0 0 1px rgba(99,102,241,.08) inset;
+    }
+
+    .wf-chrome {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 20px;
+      background: rgba(255,255,255,.02);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .wf-chrome .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .wf-chrome .dot:nth-child(1) { background: #ef4444; }
+    .wf-chrome .dot:nth-child(2) { background: #eab308; }
+    .wf-chrome .dot:nth-child(3) { background: #22c55e; }
+
+    .wf-chrome-title {
+      margin-left: 12px;
+      font-size: .78rem;
+      color: var(--text-dim);
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    }
+
+    .wf-body {
+      padding: 20px;
+      min-height: 380px;
+    }
+
+    /* ── Messages ──────────────────────────────────────── */
+
+    .wf-msg {
+      margin-bottom: 16px;
+      opacity: 0;
+      transform: translateY(14px);
+      animation: wf-enter .4s ease forwards;
+    }
+
+    .wf-msg:last-child { margin-bottom: 0; }
+
+    @keyframes wf-enter {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .wf-msg-label {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 6px;
+    }
+
+    .wf-msg-label-user { color: var(--accent-bright); }
+    .wf-msg-label-ai { color: var(--green); }
+
+    .wf-msg-user {
+      font-size: .88rem;
+      color: var(--text);
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      background: rgba(129,140,248,.06);
+      border: 1px solid rgba(129,140,248,.12);
+      line-height: 1.6;
+    }
+
+    .wf-msg-ai {
+      font-size: .88rem;
+      color: var(--text-muted);
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      background: rgba(52,211,153,.03);
+      border: 1px solid rgba(52,211,153,.1);
+      line-height: 1.7;
+    }
+
+    .wf-msg-ai strong { color: var(--text); font-weight: 600; }
+
+    .wf-msg-ai code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: .85em;
+      background: rgba(255,255,255,.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent-bright);
+    }
+
+    .wf-ref {
+      color: var(--accent-bright);
+      font-weight: 600;
+      font-size: .88em;
+    }
+
+    /* ── Tool Call Cards ───────────────────────────────── */
+
+    .wf-tool {
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      border: 1px dashed rgba(129,140,248,.2);
+      background: rgba(129,140,248,.03);
+    }
+
+    .wf-tool-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: .78rem;
+      margin-bottom: 10px;
+    }
+
+    .wf-tool-icon { font-size: .9rem; }
+    .wf-tool-name { color: var(--accent-bright); font-weight: 600; }
+    .wf-tool-query { color: var(--text-dim); }
+
+    .wf-tool-results {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .wf-tool-result {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .wf-tool-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: .72rem;
+      font-weight: 600;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      background: rgba(52,211,153,.1);
+      color: var(--green);
+    }
+
+    .wf-tool-badge-text {
+      font-size: .78rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Code Block ────────────────────────────────────── */
+
+    .wf-codeblock {
+      margin: 12px 0;
+      padding: 16px;
+      border-radius: var(--radius-sm);
+      background: rgba(0,0,0,.3);
+      border: 1px solid var(--border);
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: .8rem;
+      line-height: 1.7;
+      overflow-x: auto;
+      color: var(--text-muted);
+    }
+
+    .wf-codeblock code { background: none; padding: 0; font-size: inherit; color: inherit; }
+    .wf-kw { color: var(--accent-bright); }
+    .wf-fn { color: var(--green); }
+    .wf-str { color: var(--orange); }
+
+    /* ── Insight ───────────────────────────────────────── */
+
+    .wf-insight {
+      max-width: 800px;
+      margin: 20px auto 0;
+      text-align: center;
+      font-size: .9rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+      min-height: 28px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .4s ease, transform .4s ease;
+    }
+
+    .wf-insight.show { opacity: 1; transform: translateY(0); }
+
+    /* ── Journey Summary ───────────────────────────────── */
+
+    .wf-summary {
+      text-align: center;
+      padding: 80px 0 60px;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity .6s ease, max-height .6s ease, padding .6s ease;
+    }
+
+    .wf-summary.show {
+      opacity: 1;
+      max-height: 400px;
+      padding: 80px 0 60px;
+    }
+
+    .wf-stats {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 48px;
+      margin-bottom: 32px;
+    }
+
+    .wf-stat { text-align: center; }
+
+    .wf-stat-num {
+      display: block;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .wf-stat-label {
+      font-size: .8rem;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .wf-stat-sep {
+      font-size: 2rem;
+      color: var(--border);
+      margin-top: 12px;
+    }
+
+    .wf-punchline {
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--green), var(--accent-bright));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 28px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .5s ease .3s, transform .5s ease .3s;
+    }
+
+    .wf-summary.show .wf-punchline { opacity: 1; transform: translateY(0); }
+
+    /* ── CTA ───────────────────────────────────────────── */
+
+    .cta {
+      text-align: center;
+      padding: 100px 0;
+    }
+
+    .cta h2 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .cta h2 .gradient {
+      background: linear-gradient(135deg, var(--accent-bright), #c084fc);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .cta p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 500px;
+      margin: 0 auto 32px;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ── Footer ────────────────────────────────────────── */
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+    }
+
+    footer .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: .8rem;
+      color: var(--text-dim);
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color .15s;
+    }
+
+    footer a:hover { color: var(--text); }
+
+    /* ── Journey Pause/Play ────────────────────────────── */
+
+    .wf-journey-ctrl {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-dim);
+      cursor: pointer;
+      margin-left: 12px;
+      margin-top: -2px;
+      transition: color .15s, border-color .15s;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+
+    .wf-journey-ctrl:hover { color: var(--text); border-color: var(--border-hover); }
+
+    /* ── Animations ────────────────────────────────────── */
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Responsive ────────────────────────────────────── */
+
+    @media (max-width: 768px) {
+      .wf-hero { padding: 72px 0 48px; }
+      .wf-body { padding: 16px; min-height: 320px; }
+      .wf-msg-user, .wf-msg-ai { font-size: .82rem; padding: 12px 14px; }
+      .wf-tool { padding: 12px 14px; }
+      .wf-tool-head { font-size: .72rem; }
+      .wf-stats { gap: 24px; }
+      .wf-stat-sep { display: none; }
+      .wf-jline { width: 28px; }
+      .wf-tab { padding: 7px 14px; font-size: .78rem; }
+    }
+
+    @media (max-width: 480px) {
+      .wf-tabs { gap: 3px; }
+      .wf-tab { padding: 6px 10px; font-size: .72rem; }
+      .wf-jstep { min-width: 44px; }
+      .wf-jlabel { font-size: .6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="glow"></div>
+
+<!-- ── Nav ──────────────────────────────────────────────── -->
+
+<nav>
+  <div class="container">
+    <a href="index.html" class="nav-brand">
+      <span class="dot"></span>
+      SynergyOS<span style="color:var(--text-dim);font-weight:400">.ai</span>
+    </a>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a href="product-brain.html" class="btn btn-ghost">Product Brain</a>
+      <a href="index.html" class="btn btn-ghost">Back to Product OS</a>
+      <a href="https://synergyos.ai" class="btn btn-primary" target="_blank" rel="noopener">Start free trial</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ─────────────────────────────────────────────── -->
+
+<section class="wf-hero">
+  <div class="container">
+    <span class="section-label">See it in action</span>
+    <h1>From idea to shipped code.<br><span class="gradient">4 conversations. 0 rework.</span></h1>
+    <p>Watch how a developer uses Product OS to shape, scope, write tickets, and build &mdash; with every decision grounded in a living knowledge base.</p>
+    <div class="wf-hero-actions">
+      <button class="btn btn-primary" id="journey-start">Watch the journey</button>
+      <a href="#scenarios" class="btn btn-ghost">Browse scenarios</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Workflow Showcase ────────────────────────────────── -->
+
+<section class="wf-showcase" id="scenarios">
+  <div class="container">
+
+    <!-- Journey progress bar (hidden until journey mode) -->
+    <div class="wf-journey" id="wf-journey">
+      <div class="wf-jstep">
+        <span class="wf-jdot" id="jdot-0"></span>
+        <span class="wf-jlabel" id="jlbl-0">Shape</span>
+      </div>
+      <div class="wf-jline" id="jline-0"></div>
+      <div class="wf-jstep">
+        <span class="wf-jdot" id="jdot-1"></span>
+        <span class="wf-jlabel" id="jlbl-1">Scope</span>
+      </div>
+      <div class="wf-jline" id="jline-1"></div>
+      <div class="wf-jstep">
+        <span class="wf-jdot" id="jdot-2"></span>
+        <span class="wf-jlabel" id="jlbl-2">Tickets</span>
+      </div>
+      <div class="wf-jline" id="jline-2"></div>
+      <div class="wf-jstep">
+        <span class="wf-jdot" id="jdot-3"></span>
+        <span class="wf-jlabel" id="jlbl-3">Build</span>
+      </div>
+      <button class="wf-journey-ctrl" id="journey-toggle" aria-label="Pause journey">
+        <svg id="jctrl-icon" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="wf-tabs" id="wf-tabs">
+      <button class="wf-tab active" data-tab="0">Shape</button>
+      <button class="wf-tab" data-tab="1">Scope</button>
+      <button class="wf-tab" data-tab="2">Tickets</button>
+      <button class="wf-tab" data-tab="3">Build</button>
+    </div>
+
+    <!-- Chat window -->
+    <div class="wf-chat" id="wf-chat">
+      <div class="wf-chrome">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="wf-chrome-title">cursor &mdash; your-project</span>
+      </div>
+      <div class="wf-body" id="wf-body"></div>
+    </div>
+
+    <!-- Scenario insight -->
+    <p class="wf-insight" id="wf-insight"></p>
+
+  </div>
+</section>
+
+<!-- ── Journey Summary ─────────────────────────────────── -->
+
+<section class="wf-summary" id="wf-summary">
+  <div class="container">
+    <div class="wf-stats">
+      <div class="wf-stat">
+        <span class="wf-stat-num" id="stat-convos">0</span>
+        <span class="wf-stat-label">conversations</span>
+      </div>
+      <div class="wf-stat-sep">&middot;</div>
+      <div class="wf-stat">
+        <span class="wf-stat-num" id="stat-entries">0</span>
+        <span class="wf-stat-label">KB entries</span>
+      </div>
+      <div class="wf-stat-sep">&middot;</div>
+      <div class="wf-stat">
+        <span class="wf-stat-num" id="stat-rework">0</span>
+        <span class="wf-stat-label">rework</span>
+      </div>
+    </div>
+    <p class="wf-punchline">First time good.</p>
+    <button class="btn btn-ghost" id="journey-replay">Replay the journey</button>
+  </div>
+</section>
+
+<!-- ── CTA ──────────────────────────────────────────────── -->
+
+<section class="cta">
+  <div class="container">
+    <h2>Ready to work <span class="gradient">in synergy with AI</span>?</h2>
+    <p>Product OS gives your team the context to get it right the first time. Every time.</p>
+    <div class="cta-actions">
+      <a href="https://synergyos.ai" class="btn btn-primary" target="_blank" rel="noopener">Start free trial</a>
+      <a href="index.html#install" class="btn btn-ghost">Self-host (free forever)</a>
+      <a href="index.html" class="btn btn-ghost">Back to Product OS</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ──────────────────────────────────────────── -->
+
+<footer>
+  <div class="container">
+    <span>Product OS MCP &mdash; MIT License &middot; <a href="https://synergyos.ai" target="_blank" rel="noopener">SynergyOS.ai</a></span>
+    <div style="display:flex;gap:20px;align-items:center">
+      <a href="index.html">Home</a>
+      <a href="https://github.com/synergyai-os/product-os-mcp" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ── Scenario Data + Rendering Engine ────────────────── -->
+
+<script>
+(function() {
+  'use strict';
+
+  /* ── Scenario Data ───────────────────────────────────── */
+
+  var BUILD_CODE =
+    '<pre class="wf-codeblock"><code>' +
+    '<span class="wf-kw">export function</span> <span class="wf-fn">SupplierForm</span>({ orderId }) {\n' +
+    '  <span class="wf-kw">const</span> suppliers = <span class="wf-fn">useQuery</span>(\n' +
+    '    api.suppliers.<span class="wf-fn">listApproved</span>\n' +
+    '  );\n' +
+    '\n' +
+    '  <span class="wf-kw">return</span> (\n' +
+    '    &lt;<span class="wf-fn">Select</span>\n' +
+    '      label=<span class="wf-str">"Supplier"</span>\n' +
+    '      field=<span class="wf-str">"supplierId"</span>\n' +
+    '      options={suppliers}\n' +
+    '      validate={<span class="wf-fn">validateApprovedSupplier</span>}\n' +
+    '    /&gt;\n' +
+    '  );\n' +
+    '}' +
+    '</code></pre>';
+
+  var SCENARIOS = [
+    {
+      id: 'shape',
+      tab: 'Shape',
+      insight: 'The KB surfaced the tension and glossary term automatically. No searching through wikis or Slack.',
+      messages: [
+        {
+          role: 'user',
+          text: 'We keep getting bugs because devs use "vendor" instead of "supplier" in the codebase. Help me shape this into a bet.'
+        },
+        {
+          role: 'tool',
+          tool: 'kb-search',
+          query: '"supplier vendor terminology"',
+          results: [
+            { id: 'TN-008', label: 'Terminology drift' },
+            { id: 'GT-019', label: 'Supplier definition' }
+          ]
+        },
+        {
+          role: 'ai',
+          html: 'Found <span class="wf-ref">TN-008</span> (terminology drift between vendor/supplier) and <span class="wf-ref">GT-019</span> (supplier = canonical term for external entity).<br><br>' +
+            '<strong>Problem:</strong> Developers create fields like <code>vendorName</code>, <code>vendorId</code> because there\'s no enforced glossary. This contradicts <span class="wf-ref">BR-012</span> and causes rework every review cycle.<br><br>' +
+            '<strong>Appetite:</strong> Small batch &mdash; 2 weeks<br><br>' +
+            '<strong>Solution elements:</strong><br>' +
+            '1. Supplier validation on the order form<br>' +
+            '2. Schema enforcement via GT-019 terminology<br>' +
+            '3. Drift detection for future terminology changes<br><br>' +
+            'Does this capture the real problem?'
+        },
+        {
+          role: 'user',
+          text: 'Perfect. Let\'s scope it.'
+        }
+      ]
+    },
+    {
+      id: 'scope',
+      tab: 'Scope',
+      insight: 'The knowledge graph revealed connected business rules, creating natural scope boundaries automatically.',
+      messages: [
+        {
+          role: 'user',
+          text: 'Break this shaped bet into buildable scopes.'
+        },
+        {
+          role: 'tool',
+          tool: 'gather-context',
+          query: 'TN-008',
+          results: [
+            { id: 'BR-012', label: 'Field governance' },
+            { id: 'GT-019', label: 'Supplier definition' },
+            { id: 'DR-005', label: 'Use suppliers table' },
+            { id: 'BR-015', label: 'Approved list rule' }
+          ]
+        },
+        {
+          role: 'ai',
+          html: 'Walking the knowledge graph from <span class="wf-ref">TN-008</span>:<br><br>' +
+            '<strong>Scope 1: Form Validation</strong> (3 days)<br>' +
+            '<code>SupplierForm</code> component with <code>supplierId</code> field. Validate against approved supplier list per <span class="wf-ref">BR-015</span>.<br><br>' +
+            '<strong>Scope 2: Schema Migration</strong> (2 days)<br>' +
+            'Update to <code>suppliers</code> table per <span class="wf-ref">DR-005</span>. Migrate legacy vendor fields.<br><br>' +
+            '<strong>Scope 3: Drift Detection</strong> (2 days)<br>' +
+            'Wire KB entries to code mappings. Run <code>verify</code> to catch future drift.<br><br>' +
+            'All 3 scopes fit within the 2-week appetite. Which scope first?'
+        },
+        {
+          role: 'user',
+          text: 'Start with Scope 1. Write the tickets.'
+        }
+      ]
+    },
+    {
+      id: 'tickets',
+      tab: 'Tickets',
+      insight: 'Every ticket uses correct terminology and references specific KB governance rules. No ambiguity.',
+      messages: [
+        {
+          role: 'user',
+          text: 'Write implementation tickets for Scope 1: Form Validation.'
+        },
+        {
+          role: 'tool',
+          tool: 'review-rules',
+          query: '"supplier form validation"',
+          results: [
+            { id: 'BR-012', label: 'Field governance' },
+            { id: 'BR-015', label: 'Approved list rule' }
+          ]
+        },
+        {
+          role: 'ai',
+          html: 'Tickets grounded in <span class="wf-ref">BR-012</span> and <span class="wf-ref">BR-015</span>:<br><br>' +
+            '<strong>SV-001: Create SupplierForm component</strong><br>' +
+            'Replace vendor dropdown with supplier lookup. Reference <code>suppliers</code> table via <code>supplierId</code> (not <code>vendorId</code>). Validate against approved list per <span class="wf-ref">BR-015</span>.<br><br>' +
+            '<strong>SV-002: Add useSupplierValidation hook</strong><br>' +
+            'Check <code>supplierId</code> exists in approved suppliers. Return errors using canonical terminology from <span class="wf-ref">GT-019</span>.<br><br>' +
+            '<strong>SV-003: Wire into order form</strong><br>' +
+            'Integrate SupplierForm, remove deprecated vendor fields. All field names match glossary.'
+        },
+        {
+          role: 'user',
+          text: 'Let\'s build SV-001.'
+        }
+      ]
+    },
+    {
+      id: 'build',
+      tab: 'Build',
+      insight: 'Code was correct on the first attempt — right terms, right table, right validation rules. Zero rework.',
+      messages: [
+        {
+          role: 'user',
+          text: 'Implement SV-001: Create the SupplierForm component.'
+        },
+        {
+          role: 'tool',
+          tool: 'get-entry',
+          query: 'GT-019, BR-012, BR-015',
+          results: [
+            { id: 'GT-019', label: 'Supplier definition' },
+            { id: 'BR-012', label: 'Field governance' },
+            { id: 'BR-015', label: 'Approved list rule' }
+          ]
+        },
+        {
+          role: 'ai',
+          html: 'Per <span class="wf-ref">GT-019</span>, "supplier" is the canonical term. Per <span class="wf-ref">BR-012</span>, supplier fields must use <code>supplierId</code> referencing the <code>suppliers</code> table. Per <span class="wf-ref">BR-015</span>, validate against the approved list.' +
+            BUILD_CODE +
+            'Correct terms, correct table, rules satisfied. <strong>First time good.</strong>'
+        }
+      ]
+    }
+  ];
+
+  /* ── DOM References ──────────────────────────────────── */
+
+  var body = document.getElementById('wf-body');
+  var insight = document.getElementById('wf-insight');
+  var tabs = document.querySelectorAll('.wf-tab');
+  var chat = document.getElementById('wf-chat');
+  var journey = document.getElementById('wf-journey');
+  var summary = document.getElementById('wf-summary');
+  var currentIdx = 0;
+
+  /* ── Message Rendering ───────────────────────────────── */
+
+  function createMessage(msg) {
+    var wrap = document.createElement('div');
+    wrap.className = 'wf-msg';
+
+    if (msg.role === 'user') {
+      wrap.innerHTML =
+        '<div class="wf-msg-label wf-msg-label-user">You</div>' +
+        '<div class="wf-msg-user">' + escapeHtml(msg.text) + '</div>';
+    } else if (msg.role === 'tool') {
+      var badges = '';
+      for (var i = 0; i < msg.results.length; i++) {
+        var r = msg.results[i];
+        badges +=
+          '<span class="wf-tool-result">' +
+            '<span class="wf-tool-badge">' + r.id + '</span>' +
+            '<span class="wf-tool-badge-text">' + r.label + '</span>' +
+          '</span>';
+      }
+      wrap.innerHTML =
+        '<div class="wf-tool">' +
+          '<div class="wf-tool-head">' +
+            '<span class="wf-tool-icon">\u26A1</span>' +
+            '<span class="wf-tool-name">' + msg.tool + '</span> ' +
+            '<span class="wf-tool-query">' + msg.query + '</span>' +
+          '</div>' +
+          '<div class="wf-tool-results">' + badges + '</div>' +
+        '</div>';
+    } else if (msg.role === 'ai') {
+      wrap.innerHTML =
+        '<div class="wf-msg-label wf-msg-label-ai">AI Assistant</div>' +
+        '<div class="wf-msg-ai">' + msg.html + '</div>';
+    }
+
+    return wrap;
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderScenario(idx, animate) {
+    var sc = SCENARIOS[idx];
+    currentIdx = idx;
+
+    body.style.opacity = '0';
+
+    setTimeout(function() {
+      body.innerHTML = '';
+      for (var i = 0; i < sc.messages.length; i++) {
+        var el = createMessage(sc.messages[i]);
+        if (animate) {
+          el.style.animationDelay = (i * 400) + 'ms';
+        } else {
+          el.style.animation = 'none';
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+        }
+        body.appendChild(el);
+      }
+      body.style.opacity = '1';
+
+      insight.textContent = sc.insight;
+      insight.className = 'wf-insight';
+      var insightDelay = animate ? (sc.messages.length * 400 + 200) : 100;
+      setTimeout(function() { insight.classList.add('show'); }, insightDelay);
+    }, animate ? 200 : 0);
+
+    updateTabs(idx);
+  }
+
+  function updateTabs(idx) {
+    for (var i = 0; i < tabs.length; i++) {
+      tabs[i].classList.remove('active');
+      if (journeyActive && i < idx) {
+        tabs[i].classList.add('done');
+      }
+    }
+    tabs[idx].classList.add('active');
+  }
+
+  /* ── Tab Switching ───────────────────────────────────── */
+
+  for (var t = 0; t < tabs.length; t++) {
+    tabs[t].addEventListener('click', (function(idx) {
+      return function() {
+        if (journeyActive) pauseJourney();
+        renderScenario(idx, true);
+      };
+    })(t));
+  }
+
+  /* ── Journey Mode ────────────────────────────────────── */
+
+  var journeyActive = false;
+  var journeyPaused = false;
+  var journeyStep = 0;
+  var journeyTimer = null;
+  var JOURNEY_DELAY = 6000;
+
+  function startJourney() {
+    journeyActive = true;
+    journeyPaused = false;
+    journeyStep = 0;
+
+    for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('done');
+
+    journey.classList.add('active');
+    chat.classList.add('journey');
+    summary.classList.remove('show');
+    updateJourneyCtrlIcon(false);
+    resetJourneyBar();
+    advanceJourney();
+  }
+
+  function advanceJourney() {
+    if (journeyStep >= SCENARIOS.length) {
+      endJourney();
+      return;
+    }
+
+    updateJourneyBar(journeyStep);
+    renderScenario(journeyStep, true);
+
+    journeyTimer = setTimeout(function() {
+      markJourneyStepDone(journeyStep);
+      journeyStep++;
+      advanceJourney();
+    }, JOURNEY_DELAY);
+  }
+
+  function pauseJourney() {
+    journeyPaused = true;
+    clearTimeout(journeyTimer);
+    updateJourneyCtrlIcon(true);
+  }
+
+  function resumeJourney() {
+    journeyPaused = false;
+    updateJourneyCtrlIcon(false);
+    markJourneyStepDone(journeyStep);
+    journeyStep++;
+    advanceJourney();
+  }
+
+  function endJourney() {
+    journeyActive = false;
+    clearTimeout(journeyTimer);
+
+    for (var i = 0; i < tabs.length; i++) tabs[i].classList.add('done');
+    tabs[SCENARIOS.length - 1].classList.add('active');
+
+    setTimeout(function() {
+      summary.classList.add('show');
+      animateCount('stat-convos', 4, 800);
+      animateCount('stat-entries', 8, 1000);
+    }, 600);
+  }
+
+  function resetJourneyBar() {
+    for (var i = 0; i < SCENARIOS.length; i++) {
+      var dot = document.getElementById('jdot-' + i);
+      var lbl = document.getElementById('jlbl-' + i);
+      if (dot) { dot.className = 'wf-jdot'; }
+      if (lbl) { lbl.className = 'wf-jlabel'; }
+      if (i < SCENARIOS.length - 1) {
+        var line = document.getElementById('jline-' + i);
+        if (line) line.classList.remove('filled');
+      }
+    }
+  }
+
+  function updateJourneyBar(step) {
+    resetJourneyBar();
+    for (var i = 0; i < step; i++) {
+      markJourneyStepDone(i);
+    }
+    var dot = document.getElementById('jdot-' + step);
+    var lbl = document.getElementById('jlbl-' + step);
+    if (dot) { dot.className = 'wf-jdot current'; }
+    if (lbl) { lbl.className = 'wf-jlabel current'; }
+  }
+
+  function markJourneyStepDone(step) {
+    var dot = document.getElementById('jdot-' + step);
+    var lbl = document.getElementById('jlbl-' + step);
+    if (dot) { dot.className = 'wf-jdot done'; }
+    if (lbl) { lbl.className = 'wf-jlabel done'; }
+    if (step < SCENARIOS.length - 1) {
+      var line = document.getElementById('jline-' + step);
+      if (line) line.classList.add('filled');
+    }
+  }
+
+  function updateJourneyCtrlIcon(showPlay) {
+    var icon = document.getElementById('jctrl-icon');
+    if (!icon) return;
+    if (showPlay) {
+      icon.innerHTML = '<polygon points="6,4 20,12 6,20"/>';
+    } else {
+      icon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+    }
+  }
+
+  function animateCount(id, target, duration) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var start = null;
+    function step(ts) {
+      if (!start) start = ts;
+      var p = Math.min((ts - start) / duration, 1);
+      el.textContent = Math.floor(p * target);
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* ── Event Listeners ─────────────────────────────────── */
+
+  document.getElementById('journey-start').addEventListener('click', function() {
+    document.getElementById('scenarios').scrollIntoView({ behavior: 'smooth' });
+    setTimeout(startJourney, 600);
+  });
+
+  document.getElementById('journey-toggle').addEventListener('click', function() {
+    if (journeyPaused) {
+      resumeJourney();
+    } else {
+      pauseJourney();
+    }
+  });
+
+  document.getElementById('journey-replay').addEventListener('click', function() {
+    document.getElementById('scenarios').scrollIntoView({ behavior: 'smooth' });
+    setTimeout(startJourney, 400);
+  });
+
+  /* ── Init ────────────────────────────────────────────── */
+
+  renderScenario(0, false);
+
+  var showcase = document.getElementById('wf-chat');
+  var hasScrollAnimated = false;
+  var scrollObs = new IntersectionObserver(function(entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting && !hasScrollAnimated) {
+        hasScrollAnimated = true;
+        renderScenario(0, true);
+      }
+    }
+  }, { threshold: 0.2 });
+  scrollObs.observe(showcase);
+
+  var fadeEls = document.querySelectorAll('.fade-in');
+  var fadeObs = new IntersectionObserver(function(entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting) entries[i].target.classList.add('visible');
+    }
+  }, { threshold: 0.1 });
+  for (var f = 0; f < fadeEls.length; f++) fadeObs.observe(fadeEls[f]);
+
+})();
+</script>
+
+</body>
+</html>

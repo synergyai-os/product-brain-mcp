@@ -20,7 +20,7 @@ function buildOrientationMarkdown(
   standards: any[] | null,
   businessRules: any[] | null,
 ): string {
-  const sections: string[] = ["# Product OS — Orientation"];
+  const sections: string[] = ["# ProductBrain — Orientation"];
 
   // Architecture
   sections.push(
@@ -123,10 +123,10 @@ function buildOrientationMarkdown(
     "- **Full context** → `gather-context` tool (start here when working on a feature)\n" +
     "- **Discover links** → `suggest-links` tool\n" +
     "- **Quality audit** → `quality-check` tool\n" +
-    "- **Terminology** → `name-check` prompt or `product-os://terminology` resource\n" +
-    "- **Schema details** → `product-os://collections` resource or `list-collections` tool\n" +
-    "- **Labels** → `product-os://labels` resource or `list-labels` tool\n" +
-    "- **Any collection** → `product-os://{slug}/entries` resource\n" +
+    "- **Terminology** → `name-check` prompt or `productbrain://terminology` resource\n" +
+    "- **Schema details** → `productbrain://collections` resource or `list-collections` tool\n" +
+    "- **Labels** → `productbrain://labels` resource or `list-labels` tool\n" +
+    "- **Any collection** → `productbrain://{slug}/entries` resource\n" +
     "- **Log a decision** → `draft-decision-record` prompt\n" +
     "- **Health check** → `health` tool\n" +
     "- **Debug MCP calls** → `mcp-audit` tool",
@@ -139,7 +139,7 @@ export function registerResources(server: McpServer) {
   // Orientation: single-call system map for AI developers
   server.resource(
     "kb-orientation",
-    "product-os://orientation",
+    "productbrain://orientation",
     async (uri) => {
       const [collectionsResult, eventsResult, standardsResult, rulesResult] = await Promise.allSettled([
         mcpQuery<any[]>("kb.listCollections"),
@@ -166,14 +166,14 @@ export function registerResources(server: McpServer) {
   // Terminology: glossary + standards summary for deep-dives
   server.resource(
     "kb-terminology",
-    "product-os://terminology",
+    "productbrain://terminology",
     async (uri) => {
       const [glossaryResult, standardsResult] = await Promise.allSettled([
         mcpQuery<any[]>("kb.listEntries", { collectionSlug: "glossary" }),
         mcpQuery<any[]>("kb.listEntries", { collectionSlug: "standards" }),
       ]);
 
-      const lines: string[] = ["# Product OS — Terminology"];
+      const lines: string[] = ["# ProductBrain — Terminology"];
 
       if (glossaryResult.status === "fulfilled") {
         if (glossaryResult.value.length > 0) {
@@ -209,7 +209,7 @@ export function registerResources(server: McpServer) {
 
   server.resource(
     "kb-collections",
-    "product-os://collections",
+    "productbrain://collections",
     async (uri) => {
       const collections = await mcpQuery<any[]>("kb.listCollections");
 
@@ -234,12 +234,12 @@ export function registerResources(server: McpServer) {
 
   server.resource(
     "kb-collection-entries",
-    new ResourceTemplate("product-os://{slug}/entries", {
+    new ResourceTemplate("productbrain://{slug}/entries", {
       list: async () => {
         const collections = await mcpQuery<any[]>("kb.listCollections");
         return {
           resources: collections.map((c) => ({
-            uri: `product-os://${c.slug}/entries`,
+            uri: `productbrain://${c.slug}/entries`,
             name: `${c.icon ?? ""} ${c.name}`.trim(),
           })),
         };
@@ -261,7 +261,7 @@ export function registerResources(server: McpServer) {
 
   server.resource(
     "kb-labels",
-    "product-os://labels",
+    "productbrain://labels",
     async (uri) => {
       const labels = await mcpQuery<any[]>("kb.listLabels");
 

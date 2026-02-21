@@ -10,12 +10,12 @@ import { registerVerifyTools } from "./tools/verify.js";
 import { registerSmartCaptureTools } from "./tools/smart-capture.js";
 import { registerResources } from "./resources/index.js";
 import { registerPrompts } from "./prompts/index.js";
-import { getWorkspaceId } from "./client.js";
+import { getWorkspaceId, bootstrapCloudMode } from "./client.js";
 import { initAnalytics, trackSessionStarted, shutdownAnalytics } from "./analytics.js";
 
 // Dev convenience: load .env.mcp from cwd when env vars aren't already set.
 // In production (npx / Cursor MCP config), env vars come from the launcher.
-if (!process.env.CONVEX_SITE_URL) {
+if (!process.env.CONVEX_SITE_URL && !process.env.PRODUCTBRAIN_API_KEY) {
   try {
     const envPath = resolve(process.cwd(), ".env.mcp");
     for (const line of readFileSync(envPath, "utf-8").split("\n")) {
@@ -30,6 +30,9 @@ if (!process.env.CONVEX_SITE_URL) {
   }
 }
 
+// Cloud mode: PRODUCTBRAIN_API_KEY → auto-resolve cloud URL + skip WORKSPACE_SLUG
+bootstrapCloudMode();
+
 const SERVER_VERSION = "1.0.0";
 
 initAnalytics();
@@ -38,7 +41,11 @@ let workspaceId: string;
 try {
   workspaceId = await getWorkspaceId();
 } catch (err: any) {
-  process.stderr.write(`[MCP] Startup failed: ${err.message}\n`);
+  const hint =
+    !process.env.PRODUCTBRAIN_API_KEY && !process.env.CONVEX_SITE_URL
+      ? "\n[MCP] Hint: Set PRODUCTBRAIN_API_KEY in your MCP config env block. Get your key at SynergyOS → Settings → API Keys."
+      : "";
+  process.stderr.write(`[MCP] Startup failed: ${err.message}${hint}\n`);
   process.exit(1);
 }
 
@@ -50,21 +57,21 @@ trackSessionStarted(
 
 const server = new McpServer(
   {
-    name: "synergyos",
+    name: "productbrain",
     version: SERVER_VERSION,
   },
   {
     capabilities: { logging: {} },
     instructions: [
-      "Product OS — the single source of truth for product knowledge.",
+      "ProductBrain — the single source of truth for product knowledge.",
       "Terminology, standards, and core data all live here — no need to check external docs.",
       "",
-      "Terminology & naming: For 'what is X?' or naming questions, fetch `product-os://terminology`",
+      "Terminology & naming: For 'what is X?' or naming questions, fetch `productbrain://terminology`",
       "or use the `name-check` prompt to validate names against the glossary.",
       "",
       "Workflow:",
       "  1. Verify: call `health` to confirm connectivity.",
-      "  2. Terminology: fetch `product-os://terminology` or use `name-check` prompt for naming questions.",
+      "  2. Terminology: fetch `productbrain://terminology` or use `name-check` prompt for naming questions.",
       "  3. Discover: use `kb-search` to find entries by text, or `list-entries` to browse a collection.",
       "  4. Drill in: use `get-entry` for full details — data, labels, relations, history.",
       "  5. Capture: use `smart-capture` to create entries — it auto-links related entries and",
@@ -79,7 +86,7 @@ const server = new McpServer(
       "",
       "Orientation:",
       "  When you need to understand the system — architecture, data model, rules,",
-      "  or analytics — fetch the `product-os://orientation` resource first.",
+      "  or analytics — fetch the `productbrain://orientation` resource first.",
       "  It gives you the map. Then use the appropriate tool to drill in.",
     ].join("\n"),
   },

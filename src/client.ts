@@ -1,20 +1,24 @@
 /**
  * MCP client — communicates with the Convex HTTP Action gateway.
  *
- * Required env vars:
- *   CONVEX_SITE_URL  — base URL of the Convex deployment (*.convex.site, NOT *.convex.cloud)
- *                      e.g. https://trustworthy-kangaroo-277.convex.site
- *   MCP_API_KEY      — secret key matching MCP_API_KEY set in the Convex dashboard env vars
- *   WORKSPACE_SLUG   — slug of the workspace to operate on
+ * Two configuration modes:
  *
- * All calls go through POST /api/mcp on the Convex site URL.
- * The HTTP Action validates the API key before dispatching to internal Convex functions.
- * workspaceId is resolved once at startup and injected into every call automatically.
+ * 1. **Cloud mode** (single key):
+ *    PRODUCTBRAIN_API_KEY=pb_sk_...
+ *    The cloud URL is resolved automatically. Workspace is inferred from the key.
+ *
+ * 2. **Self-hosted mode** (three vars):
+ *    CONVEX_SITE_URL  — base URL of the Convex deployment (*.convex.site)
+ *    MCP_API_KEY      — secret key matching MCP_API_KEY set in the Convex dashboard env vars
+ *    WORKSPACE_SLUG   — slug of the workspace to operate on
  */
 
 import { trackToolCall } from "./analytics.js";
 
+const DEFAULT_CLOUD_URL = "https://earnest-sheep-635.convex.site";
+
 let cachedWorkspaceId: string | null = null;
+let cloudMode = false;
 
 export interface AuditEntry {
   ts: string;
@@ -27,6 +31,20 @@ export interface AuditEntry {
 
 const AUDIT_BUFFER_SIZE = 50;
 const auditBuffer: AuditEntry[] = [];
+
+/**
+ * Bootstrap cloud mode: if PRODUCTBRAIN_API_KEY is set, map it to the
+ * internal env vars so the rest of the client works transparently.
+ */
+export function bootstrapCloudMode(): void {
+  const pbKey = process.env.PRODUCTBRAIN_API_KEY;
+  if (pbKey?.startsWith("pb_sk_")) {
+    const cloudUrl = process.env.PRODUCTBRAIN_URL ?? DEFAULT_CLOUD_URL;
+    process.env.CONVEX_SITE_URL ??= cloudUrl;
+    process.env.MCP_API_KEY ??= pbKey;
+    cloudMode = true;
+  }
+}
 
 function getEnv(key: string): string {
   const value = process.env[key];
@@ -101,9 +119,22 @@ export async function mcpCall<T>(fn: string, args: Record<string, unknown> = {})
   return json.data as T;
 }
 
-/** Resolve and cache the workspace ID from WORKSPACE_SLUG. */
+/** Resolve and cache the workspace ID. Cloud mode resolves from the API key; self-hosted uses WORKSPACE_SLUG. */
 export async function getWorkspaceId(): Promise<string> {
   if (cachedWorkspaceId) return cachedWorkspaceId;
+
+  if (cloudMode) {
+    // Cloud keys: the backend resolves workspace from the key itself
+    const workspace = await mcpCall<{ _id: string; name: string; slug: string } | null>(
+      'resolveWorkspace',
+      { slug: "__cloud__" },
+    );
+    if (!workspace) {
+      throw new Error("Cloud key is valid but no workspace is associated. Run `npx productbrain setup` again.");
+    }
+    cachedWorkspaceId = workspace._id;
+    return cachedWorkspaceId;
+  }
 
   const slug = getEnv('WORKSPACE_SLUG');
   const workspace = await mcpCall<{ _id: string; name: string; slug: string } | null>(
