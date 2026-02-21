@@ -1,18 +1,26 @@
 # ProductBrain
 
-> **This is the new repo** — remove this line once validated.
-
 The single source of truth for product knowledge — glossary, business rules, tensions, decisions, labels, and relations — accessible as an MCP server in [Claude Desktop](https://claude.ai/download), [Cursor](https://cursor.com), and any MCP-compatible AI assistant.
 
 ProductBrain connects your AI assistant to your team's knowledge base. Ask questions, capture decisions, and build a living knowledge graph without leaving your editor.
 
 ## Quick Start (Cloud)
 
-### 1. Get your API key
+### Option A: Guided setup (recommended)
+
+```bash
+npx productbrain setup
+```
+
+This opens SynergyOS → Settings → API Keys, prompts you to paste your key, and writes the config for Cursor or Claude Desktop.
+
+### Option B: Manual config
+
+**1. Get your API key**
 
 Go to **SynergyOS → Settings → API Keys** and click **Generate Key**. Copy the `pb_sk_...` key.
 
-### 2. Configure your AI assistant
+**2. Configure your AI assistant**
 
 **Claude Desktop** — edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
@@ -46,7 +54,7 @@ Go to **SynergyOS → Settings → API Keys** and click **Generate Key**. Copy t
 }
 ```
 
-### 3. Restart your assistant and verify
+**3. Restart your assistant and verify**
 
 Ask:
 

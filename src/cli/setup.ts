@@ -3,16 +3,15 @@
 /**
  * `npx productbrain setup`
  *
- * Guided onboarding: authenticate via GitHub, create a workspace,
- * generate an API key, and write MCP client config files.
+ * Guided onboarding: get API key from SynergyOS, paste it, and write MCP config.
+ * No GitHub — keys come from SynergyOS → Settings → API Keys.
  */
 
-import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { randomBytes } from "node:crypto";
+import { createInterface } from "node:readline";
 import { detectClients, writeClientConfig, type McpClientInfo } from "./config-writer.js";
 
-const DEFAULT_CLOUD_URL = "https://earnest-sheep-635.convex.site";
-const CLOUD_URL = process.env.PRODUCTBRAIN_URL ?? DEFAULT_CLOUD_URL;
+const SYNERGYOS_APP_URL =
+  process.env.SYNERGYOS_APP_URL ?? process.env.PRODUCTBRAIN_APP_URL ?? "http://localhost:5173";
 
 // ── Helpers ─────────────────────────────────────────────────────────────
 
@@ -46,106 +45,27 @@ function openBrowser(url: string) {
   }
 }
 
-// ── Localhost callback server ───────────────────────────────────────────
-
-interface CallbackResult {
-  token: string;
-  nonce: string;
-}
-
-function startCallbackServer(
-  expectedNonce: string,
-): Promise<{ result: Promise<CallbackResult>; port: number; close: () => void }> {
-  return new Promise((resolveServer) => {
-    let resolveResult: (r: CallbackResult) => void;
-    const resultPromise = new Promise<CallbackResult>((r) => {
-      resolveResult = r;
-    });
-
-    const server = createServer((req: IncomingMessage, res: ServerResponse) => {
-      const url = new URL(req.url ?? "/", `http://localhost`);
-
-      if (url.pathname === "/callback") {
-        const token = url.searchParams.get("token") ?? "";
-        const nonce = url.searchParams.get("nonce") ?? "";
-
-        if (nonce !== expectedNonce) {
-          res.writeHead(400, { "Content-Type": "text/html" });
-          res.end("<h1>Invalid nonce — please try again.</h1>");
-          return;
-        }
-
-        res.writeHead(200, { "Content-Type": "text/html" });
-        res.end(
-          `<!DOCTYPE html><html><head><style>body{font-family:system-ui;background:#0a0a0f;color:#e4e4e7;display:flex;align-items:center;justify-content:center;min-height:100vh}` +
-            `.card{background:#18181b;border:1px solid #27272a;border-radius:16px;padding:48px 40px;text-align:center}` +
-            `h1{font-size:20px;margin-bottom:8px}p{color:#71717a;font-size:14px}</style></head>` +
-            `<body><div class="card"><div style="font-size:48px;margin-bottom:16px">&#10003;</div>` +
-            `<h1>Authenticated</h1><p>You can close this tab and return to your terminal.</p></div></body></html>`,
-        );
-
-        resolveResult!({ token, nonce });
-      } else {
-        res.writeHead(404);
-        res.end("Not found");
-      }
-    });
-
-    server.listen(0, "127.0.0.1", () => {
-      const addr = server.address();
-      const port = typeof addr === "object" && addr ? addr.port : 0;
-      resolveServer({
-        result: resultPromise,
-        port,
-        close: () => server.close(),
-      });
+function prompt(question: string): Promise<string> {
+  return new Promise((resolve) => {
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer.trim());
     });
   });
 }
 
-// ── Provisioning ────────────────────────────────────────────────────────
-
-async function provision(sessionToken: string): Promise<{
-  apiKey: string;
-  workspaceSlug: string;
-  userName: string;
-}> {
-  const res = await fetch(`${CLOUD_URL}/api/provision`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${sessionToken}`,
-    },
-  });
-
-  const json = (await res.json()) as { data?: any; error?: string };
-  if (!res.ok || json.error) {
-    throw new Error(`Provisioning failed: ${json.error ?? `HTTP ${res.status}`}`);
-  }
-
-  return json.data;
-}
-
-// ── Interactive prompt (minimal, no dependencies) ───────────────────────
-
-function prompt(question: string, choices: string[]): Promise<number> {
+function promptChoice(question: string, choices: string[]): Promise<number> {
   return new Promise((resolve) => {
     log("");
     log(bold(question));
     choices.forEach((c, i) => log(`  ${i + 1}) ${c}`));
-    process.stdout.write(`\n  ${dim("Choice [1]:")} `);
-
-    const rl = require("node:readline").createInterface({
-      input: process.stdin,
-      output: process.stdout,
-      terminal: false,
-    });
-
-    rl.on("line", (line: string) => {
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    rl.question(`\n  ${dim("Choice [1]:")} `, (line) => {
       rl.close();
       const n = parseInt(line.trim(), 10);
       if (isNaN(n) || n < 1 || n > choices.length) {
-        resolve(0); // default to first
+        resolve(0);
       } else {
         resolve(n - 1);
       }
@@ -157,36 +77,33 @@ function prompt(question: string, choices: string[]): Promise<number> {
 
 export async function runSetup() {
   log("");
-  log(bold(`  Product${orange("Brain")} Cloud Setup`));
+  log(bold(`  Product${orange("Brain")} Setup`));
   log(dim("  Connect your AI assistant to your knowledge base\n"));
 
-  // 1. Start localhost callback server
-  const nonce = randomBytes(16).toString("hex");
-  const { result: callbackResult, port, close } = await startCallbackServer(nonce);
+  const apiKeysUrl = `${SYNERGYOS_APP_URL}/settings/api-keys`;
 
-  // 2. Open browser for GitHub auth
-  const loginUrl = `${CLOUD_URL}/auth/login?port=${port}&nonce=${nonce}`;
-  log(`  ${dim("Opening browser for GitHub sign-in...")}`);
-  openBrowser(loginUrl);
-  log(`  ${dim("Waiting for authentication...")}\n`);
+  log(`  ${dim("1. Get your API key from SynergyOS")}`);
+  log(`     ${dim(apiKeysUrl)}\n`);
 
-  // 3. Wait for callback
-  let sessionToken: string;
-  try {
-    const result = await callbackResult;
-    sessionToken = result.token;
-  } finally {
-    close();
+  const openNow = await prompt(`  Open this URL in your browser? [Y/n]: `);
+  if (openNow.toLowerCase() !== "n" && openNow.toLowerCase() !== "no") {
+    openBrowser(apiKeysUrl);
   }
 
-  log(`  ${green("✓")} Authenticated\n`);
+  log("");
+  log(`  ${dim("2. Generate a key (if you don't have one), then copy it.\n")}`);
 
-  // 4. Provision workspace + API key
-  log(`  ${dim("Creating workspace and API key...")}`);
-  const { apiKey, workspaceSlug, userName } = await provision(sessionToken);
-  log(`  ${green("✓")} Workspace ${bold(workspaceSlug)} ready for ${bold(userName)}\n`);
+  const apiKey = await prompt(`  Paste your API key (pb_sk_...): `);
 
-  // 5. Detect MCP clients and write config
+  if (!apiKey || !apiKey.startsWith("pb_sk_")) {
+    log(`  ${orange("!")} Invalid key format. Keys start with pb_sk_.`);
+    log(`  Get one at ${apiKeysUrl}\n`);
+    process.exit(1);
+  }
+
+  log(`  ${green("✓")} Key received\n`);
+
+  // 3. Detect MCP clients and write config
   const clients = detectClients();
 
   if (clients.length === 0) {
@@ -197,15 +114,15 @@ export async function runSetup() {
 
   const clientNames = clients.map((c) => c.name);
   const allOption =
-    clients.length > 1 ? [...clientNames, "All of the above", "Just show me the config"] : [...clientNames, "Just show me the config"];
+    clients.length > 1
+      ? [...clientNames, "All of the above", "Just show me the config"]
+      : [...clientNames, "Just show me the config"];
 
-  const choice = await prompt("Which AI assistant should I configure?", allOption);
+  const choice = await promptChoice("Which AI assistant should I configure?", allOption);
 
   if (choice === allOption.length - 1) {
-    // "Just show me the config"
     printConfigSnippet(apiKey);
   } else if (clients.length > 1 && choice === allOption.length - 2) {
-    // "All of the above"
     for (const client of clients) {
       await writeConfig(client, apiKey);
     }

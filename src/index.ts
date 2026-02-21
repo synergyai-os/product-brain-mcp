@@ -57,7 +57,7 @@ trackSessionStarted(
 
 const server = new McpServer(
   {
-    name: "productbrain",
+    name: "Product Brain",
     version: SERVER_VERSION,
   },
   {
